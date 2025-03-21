@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Search, Filter, PlusCircle, X, Tag as TagIcon, Save } from 'lucide-react';
@@ -21,7 +20,7 @@ const sampleEntries: JournalEntryType[] = [
   {
     id: '1',
     title: 'First day of meditation',
-    content: 'Today I started my meditation journey. I found it challenging to sit still for even 5 minutes, but I'm proud of myself for trying. My mind was racing with thoughts about work and upcoming deadlines, but I tried to gently bring my focus back to my breath each time I noticed my mind wandering.\n\nI felt calmer afterward and I think I'll try again tomorrow. Maybe I'll use a guided meditation app to help me get started.',
+    content: "Today I started my meditation journey. I found it challenging to sit still for even 5 minutes, but I'm proud of myself for trying. My mind was racing with thoughts about work and upcoming deadlines, but I tried to gently bring my focus back to my breath each time I noticed my mind wandering.\n\nI felt calmer afterward and I think I'll try again tomorrow. Maybe I'll use a guided meditation app to help me get started.",
     date: new Date('2023-07-15'),
     tags: ['meditation', 'beginnings', 'mindfulness'],
     isPrivate: true,
@@ -33,7 +32,7 @@ const sampleEntries: JournalEntryType[] = [
   {
     id: '2',
     title: 'Reflecting on progress',
-    content: 'It's been two weeks of consistent meditation practice. I can now sit for 10 minutes without feeling restless. I've noticed I'm more aware of my emotions throughout the day, and I don't react as quickly to minor annoyances.\n\nI had a difficult conversation with a colleague today that would have usually stressed me out, but I was able to stay calm and listen more effectively. Is this the meditation helping? It feels like I'm developing more space between stimulus and response.',
+    content: "It's been two weeks of consistent meditation practice. I can now sit for 10 minutes without feeling restless. I've noticed I'm more aware of my emotions throughout the day, and I don't react as quickly to minor annoyances.\n\nI had a difficult conversation with a colleague today that would have usually stressed me out, but I was able to stay calm and listen more effectively. Is this the meditation helping? It feels like I'm developing more space between stimulus and response.",
     date: new Date('2023-07-29'),
     tags: ['progress', 'meditation', 'work'],
     isPrivate: false,
