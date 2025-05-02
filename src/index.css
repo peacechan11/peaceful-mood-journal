@@ -1,5 +1,6 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -7,65 +8,65 @@
 
 @layer base {
   :root {
-    --background: 210 50% 98%;
-    --foreground: 222 47% 11%;
+    --background: 260 50% 98%;
+    --foreground: 250 47% 11%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
+    --card-foreground: 250 47% 11%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
+    --popover-foreground: 250 47% 11%;
 
-    --primary: 221 83% 53%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 265 83% 45%;
+    --primary-foreground: 260 40% 98%;
 
-    --secondary: 250 95% 76%;
-    --secondary-foreground: 222 47% 11%;
+    --secondary: 175 95% 35%;
+    --secondary-foreground: 250 47% 11%;
 
-    --muted: 210 40% 96%;
-    --muted-foreground: 215 16% 47%;
+    --muted: 260 40% 96%;
+    --muted-foreground: 250 16% 47%;
 
-    --accent: 210 40% 90%;
-    --accent-foreground: 222 47% 11%;
+    --accent: 260 40% 90%;
+    --accent-foreground: 250 47% 11%;
 
     --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 260 40% 98%;
 
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
-    --ring: 221 83% 53%;
+    --border: 260 32% 91%;
+    --input: 260 32% 91%;
+    --ring: 265 83% 45%;
 
-    --radius: 0.75rem;
+    --radius: 1rem;
   }
 
   .dark {
-    --background: 222 47% 11%;
-    --foreground: 210 40% 98%;
+    --background: 250 47% 11%;
+    --foreground: 260 40% 98%;
 
-    --card: 222 47% 11%;
-    --card-foreground: 210 40% 98%;
+    --card: 250 47% 11%;
+    --card-foreground: 260 40% 98%;
 
-    --popover: 222 47% 11%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 250 47% 11%;
+    --popover-foreground: 260 40% 98%;
 
-    --primary: 217 91% 60%;
-    --primary-foreground: 222 47% 11%;
+    --primary: 265 91% 60%;
+    --primary-foreground: 250 47% 11%;
 
-    --secondary: 250 95% 76%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 175 95% 35%;
+    --secondary-foreground: 260 40% 98%;
 
-    --muted: 217 33% 18%;
-    --muted-foreground: 215 20% 65%;
+    --muted: 257 33% 18%;
+    --muted-foreground: 250 20% 65%;
 
-    --accent: 217 33% 18%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 257 33% 18%;
+    --accent-foreground: 260 40% 98%;
 
     --destructive: 0 63% 31%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 260 40% 98%;
 
-    --border: 217 33% 18%;
-    --input: 217 33% 18%;
-    --ring: 224 76% 48%;
+    --border: 257 33% 18%;
+    --input: 257 33% 18%;
+    --ring: 264 76% 48%;
   }
 }
 
@@ -109,11 +110,30 @@
   }
 
   .glass-card {
-    @apply bg-white/90 dark:bg-black/50 backdrop-blur-lg shadow-glass-sm border border-white/30 dark:border-white/10 transition-all duration-300;
+    @apply bg-white/90 dark:bg-black/50 backdrop-blur-lg shadow-glass-sm border border-white/30 dark:border-white/10 transition-all duration-300 hover:shadow-peace;
+  }
+
+  /* Wellness Card */
+  .wellness-card {
+    @apply rounded-2xl bg-gradient-to-br from-peace-50 to-peace-100 dark:from-peace-900/30 dark:to-peace-800/30 p-6 shadow-sm backdrop-blur-sm border border-peace-200/50 dark:border-peace-700/30 transition-all duration-300;
   }
   
-  .glass-card:hover {
-    @apply shadow-glass;
+  .wellness-card:hover {
+    @apply shadow-peace transform scale-[1.02];
+  }
+
+  /* Peaceful Gradient */
+  .peaceful-gradient {
+    @apply bg-gradient-to-br from-peace-500 to-serenity-500;
+  }
+
+  .peaceful-text-gradient {
+    @apply bg-gradient-to-r from-peace-600 to-serenity-600 bg-clip-text text-transparent;
+  }
+
+  /* Breathe Animation */
+  .breathe-circle {
+    @apply rounded-full bg-gradient-to-br from-peace-300 to-serenity-300 shadow-glow animate-breathe;
   }
 
   /* Page Transitions */

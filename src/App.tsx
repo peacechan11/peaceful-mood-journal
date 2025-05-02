@@ -10,6 +10,7 @@ import Journal from "./pages/Journal";
 import Blog from "./pages/Blog";
 import NotFound from "./pages/NotFound";
 import Chatbot from "./components/Chatbot";
+import BreatheExercise from "./components/BreatheExercise";
 
 const queryClient = new QueryClient();
 
@@ -27,6 +28,7 @@ const App = () => (
           <Route path="*" element={<NotFound />} />
         </Routes>
         <Chatbot />
+        <BreatheExercise />
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
