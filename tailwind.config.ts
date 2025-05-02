@@ -53,6 +53,30 @@ export default {
 					800: '#115E59',
 					900: '#134E4A',
 				},
+				calm: {
+					50: '#EFF6FF',
+					100: '#DBEAFE',
+					200: '#BFDBFE',
+					300: '#93C5FD',
+					400: '#60A5FA',
+					500: '#3B82F6',
+					600: '#2563EB',
+					700: '#1D4ED8',
+					800: '#1E40AF',
+					900: '#1E3A8A',
+				},
+				lavender: {
+					50: '#F8F7FF',
+					100: '#F1EEFE',
+					200: '#E4DDFD',
+					300: '#D1C4FA',
+					400: '#B197F3',
+					500: '#9871EB',
+					600: '#8250E4',
+					700: '#6D3BCF',
+					800: '#5C30B0',
+					900: '#4C2890',
+				},
 				primary: {
 					DEFAULT: 'hsl(var(--primary))',
 					foreground: 'hsl(var(--primary-foreground))'
@@ -115,6 +139,11 @@ export default {
 				'breathe': {
 					'0%, 100%': { transform: 'scale(1)' },
 					'50%': { transform: 'scale(1.05)' }
+				},
+				'gentle-wave': {
+					'0%': { transform: 'translateX(0) translateZ(0) scaleY(1)' },
+					'50%': { transform: 'translateX(-25%) translateZ(0) scaleY(0.8)' },
+					'100%': { transform: 'translateX(-50%) translateZ(0) scaleY(1)' }
 				}
 			},
 			animation: {
@@ -124,17 +153,27 @@ export default {
 				'fade-up': 'fade-up 0.5s ease-out',
 				'pulse-soft': 'pulse-soft 3s infinite ease-in-out',
 				'float': 'float 6s infinite ease-in-out',
-				'breathe': 'breathe 8s infinite ease-in-out'
+				'breathe': 'breathe 8s infinite ease-in-out',
+				'gentle-wave-1': 'gentle-wave 8s infinite linear',
+				'gentle-wave-2': 'gentle-wave 10s infinite linear',
+				'gentle-wave-3': 'gentle-wave 12s infinite linear'
 			},
 			boxShadow: {
 				'peace': '0 4px 14px 0 rgba(139, 92, 246, 0.2)',
 				'glass': '0 8px 32px rgba(0, 0, 0, 0.1)',
 				'glass-sm': '0 2px 8px rgba(0, 0, 0, 0.07)',
 				'subtle': '0 2px 8px rgba(0, 0, 0, 0.04)',
-				'glow': '0 0 15px rgba(139, 92, 246, 0.5)'
+				'glow': '0 0 15px rgba(139, 92, 246, 0.5)',
+				'inner-glow': 'inset 0 0 15px rgba(139, 92, 246, 0.2)'
 			},
 			backdropBlur: {
 				'xs': '2px',
+			},
+			backgroundImage: {
+				'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+				'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
+				'gradient-peaceful': 'linear-gradient(to right, #8B5CF6, #14B8A6)',
+				'gradient-tranquil': 'linear-gradient(135deg, #E4DDFD 0%, #CCFBF1 100%)',
 			}
 		}
 	},

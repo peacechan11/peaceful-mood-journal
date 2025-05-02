@@ -15,10 +15,12 @@ PeaceSync is a comprehensive mental health application designed to support emoti
 
 PeaceSync's user interface is specifically designed to promote calmness and tranquility:
 
-- **Soothing Color Palette:** Gentle purples and teals promote relaxation
-- **Smooth Animations:** Soft transitions reduce cognitive load
+- **Soothing Color Palette:** Gentle purples, teals, and blues promote relaxation and peace
+- **Organic Visual Elements:** Soft waves and natural shapes create a sense of flow and harmony
+- **Smooth Animations:** Gentle transitions reduce cognitive load and create a peaceful experience
+- **Glassmorphism Elements:** Subtle transparency and blur effects create depth without harshness
+- **Rounded Corners:** Soft edges throughout the interface promote a sense of safety and comfort
 - **Breathing Exercise Tool:** Always-accessible tool for moments of stress
-- **Glassmorphism Elements:** Modern, subtle design that's easy on the eyes
 - **Responsive Design:** Works seamlessly across all devices
 
 ## Technology Stack

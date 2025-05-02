@@ -1,7 +1,7 @@
 
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ArrowRight, BarChart2, Book, Users, Shield } from 'lucide-react';
+import { ArrowRight, Heart, Book, Users, Shield } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
@@ -11,29 +11,29 @@ const Index = () => {
     {
       title: 'Track Your Mood',
       description: 'Record your daily emotions and identify patterns over time with intuitive visualizations.',
-      icon: BarChart2,
-      color: 'bg-blue-500',
+      icon: Heart,
+      color: 'bg-lavender-400',
       link: '/mood',
     },
     {
       title: 'Private Journaling',
       description: 'Write securely encrypted journal entries with rich text and media attachments.',
       icon: Book,
-      color: 'bg-purple-500',
+      color: 'bg-serenity-400',
       link: '/journal',
     },
     {
       title: 'Community Support',
       description: 'Connect with others, share experiences, and find support in our moderated community.',
       icon: Users,
-      color: 'bg-orange-500',
+      color: 'bg-calm-400',
       link: '/blog',
     },
     {
       title: 'Privacy First',
       description: 'Your data is encrypted and secure. We prioritize your privacy above all else.',
       icon: Shield,
-      color: 'bg-green-500',
+      color: 'bg-peace-400',
       link: '/',
     },
   ];
@@ -54,35 +54,50 @@ const Index = () => {
     <div className="min-h-screen flex flex-col">
       <Header />
       
-      <main className="flex-1 pt-24">
+      <main className="flex-1">
         {/* Hero Section */}
         <section className="relative py-20 md:py-32 overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-peace-50 to-serenity-50 dark:from-gray-900 dark:to-gray-800 -z-10" />
-          <div className="absolute inset-0 -z-10">
-            <svg
-              className="absolute right-0 top-0 h-full w-full opacity-20 dark:opacity-10"
-              viewBox="0 0 800 800"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <defs>
-                <filter id="grain" x="-50%" y="-50%" width="200%" height="200%">
-                  <feGaussianBlur stdDeviation="5" result="blur" />
-                  <feBlend in="SourceGraphic" in2="blur" mode="overlay" result="blend" />
-                </filter>
-              </defs>
-              <rect width="100%" height="100%" filter="url(#grain)" />
-            </svg>
+          <div className="absolute inset-0 bg-gradient-tranquil dark:bg-gradient-to-br dark:from-gray-900 dark:via-lavender-900/20 dark:to-serenity-900/20 -z-10" />
+          
+          {/* Animated wave background */}
+          <div className="absolute inset-0 -z-5 overflow-hidden">
+            <div className="waves h-full w-full">
+              <svg 
+                className="waves-svg w-full h-[40%] min-h-[200px]"
+                xmlns="http://www.w3.org/2000/svg" 
+                xmlnsXlink="http://www.w3.org/1999/xlink"
+                viewBox="0 24 150 28" 
+                preserveAspectRatio="none"
+              >
+                <defs>
+                  <path 
+                    id="gentle-wave" 
+                    d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z" 
+                    fill="none"
+                  />
+                </defs>
+                <g className="parallax">
+                  <use xlinkHref="#gentle-wave" x="48" y="0" fill="rgba(147, 51, 234, 0.05)" className="animate-gentle-wave-1" />
+                  <use xlinkHref="#gentle-wave" x="48" y="3" fill="rgba(139, 92, 246, 0.07)" className="animate-gentle-wave-2" />
+                  <use xlinkHref="#gentle-wave" x="48" y="5" fill="rgba(20, 184, 166, 0.05)" className="animate-gentle-wave-3" />
+                </g>
+              </svg>
+            </div>
+
+            <div className="absolute top-0 right-0 -z-10 h-80 w-80 rounded-full bg-lavender-200/20 dark:bg-lavender-900/20 blur-3xl" />
+            <div className="absolute bottom-0 left-0 -z-10 h-64 w-64 rounded-full bg-serenity-200/20 dark:bg-serenity-900/20 blur-3xl" />
           </div>
           
-          <div className="container-tight">
+          <div className="container-tight relative">
             <div className="text-center">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
+                className="bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm p-8 md:p-12 rounded-3xl shadow-glass mx-auto max-w-3xl border border-white/20 dark:border-white/5"
               >
                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6">
-                  <span className="bg-gradient-to-r from-peace-600 to-serenity-600 bg-clip-text text-transparent">
+                  <span className="bg-gradient-peaceful bg-clip-text text-transparent">
                     Peace
                   </span>
                   <span className="text-foreground">Sync</span>
@@ -93,7 +108,7 @@ const Index = () => {
                 <div className="flex flex-col sm:flex-row justify-center gap-4">
                   <Button 
                     size="lg" 
-                    className="bg-peace-500 hover:bg-peace-600 text-white"
+                    className="bg-peace-500 hover:bg-peace-600 text-white shadow-peace"
                     asChild
                   >
                     <Link to="/mood">
@@ -104,6 +119,7 @@ const Index = () => {
                   <Button 
                     size="lg" 
                     variant="outline"
+                    className="border-peace-200 dark:border-peace-800 bg-white/70 dark:bg-gray-900/70 backdrop-blur-sm"
                     asChild
                   >
                     <Link to="/journal">
@@ -117,7 +133,7 @@ const Index = () => {
         </section>
         
         {/* Features Section */}
-        <section className="py-16 md:py-24">
+        <section className="py-16 md:py-24 bg-white/70 dark:bg-gray-950/70 backdrop-blur-sm">
           <div className="container-tight">
             <div className="text-center mb-16">
               <motion.div
@@ -126,7 +142,9 @@ const Index = () => {
                 transition={{ duration: 0.5, delay: 0.2 }}
               >
                 <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                  Features Designed for Your Wellbeing
+                  <span className="bg-gradient-peaceful bg-clip-text text-transparent">
+                    Features Designed for Your Wellbeing
+                  </span>
                 </h2>
                 <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                   PeaceSync combines powerful tools to help you track, understand, and improve your emotional health.
@@ -138,13 +156,13 @@ const Index = () => {
               {features.map((feature, i) => (
                 <motion.div
                   key={i}
-                  className="bg-white dark:bg-gray-900 rounded-xl p-6 shadow-sm border border-border hover:shadow-md transition-shadow group"
+                  className="bg-white dark:bg-gray-900 rounded-xl p-6 shadow-subtle hover:shadow-peace transition-all duration-500 border border-white/50 dark:border-white/5 group"
                   custom={i}
                   initial="initial"
                   animate="animate"
                   variants={fadeIn}
                 >
-                  <div className={`${feature.color} w-12 h-12 rounded-lg flex items-center justify-center text-white mb-4`}>
+                  <div className={`${feature.color} w-12 h-12 rounded-lg flex items-center justify-center text-white mb-4 shadow-inner-glow`}>
                     <feature.icon className="h-6 w-6" />
                   </div>
                   <h3 className="text-xl font-medium mb-2">{feature.title}</h3>
@@ -163,7 +181,7 @@ const Index = () => {
         </section>
         
         {/* Testimonials Section */}
-        <section className="py-16 md:py-24 bg-gradient-to-b from-white to-peace-50 dark:from-gray-900 dark:to-gray-800">
+        <section className="py-16 md:py-24 bg-gradient-to-b from-white/80 to-lavender-50/80 dark:from-gray-900/80 dark:to-gray-950/80 backdrop-blur-sm">
           <div className="container-tight">
             <div className="text-center mb-16">
               <motion.div
@@ -172,7 +190,9 @@ const Index = () => {
                 transition={{ duration: 0.5 }}
               >
                 <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                  What Our Community Says
+                  <span className="bg-gradient-peaceful bg-clip-text text-transparent">
+                    What Our Community Says
+                  </span>
                 </h2>
                 <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                   Hear from people who have transformed their relationship with emotions and mental wellbeing.
@@ -184,13 +204,13 @@ const Index = () => {
               {testimonials.map((testimonial, i) => (
                 <motion.div
                   key={i}
-                  className="bg-white dark:bg-gray-900 rounded-xl p-6 shadow-sm border border-border relative"
+                  className="glass-card rounded-xl p-6 shadow-glass-sm relative"
                   custom={i}
                   initial="initial"
                   animate="animate"
                   variants={fadeIn}
                 >
-                  <div className="absolute -top-5 left-6 text-4xl">
+                  <div className="absolute -top-5 left-6 text-4xl text-peace-300 dark:text-peace-600">
                     "
                   </div>
                   <p className="text-muted-foreground pt-4 mb-6">
@@ -201,7 +221,7 @@ const Index = () => {
                       <img
                         src={testimonial.avatar}
                         alt={testimonial.name}
-                        className="h-10 w-10 rounded-full"
+                        className="h-10 w-10 rounded-full ring-2 ring-peace-200 dark:ring-peace-800"
                         loading="lazy"
                       />
                     </div>
@@ -219,7 +239,7 @@ const Index = () => {
         {/* CTA Section */}
         <section className="py-16 md:py-24">
           <div className="container-tight">
-            <div className="bg-gradient-to-r from-peace-500 to-serenity-500 rounded-xl p-8 md:p-12 text-white shadow-lg">
+            <div className="bg-gradient-peaceful rounded-2xl p-8 md:p-12 text-white shadow-peace">
               <div className="text-center">
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -234,7 +254,7 @@ const Index = () => {
                   </p>
                   <Button 
                     size="lg" 
-                    className="bg-white text-peace-600 hover:bg-white/90 hover:text-peace-700"
+                    className="bg-white text-peace-600 hover:bg-white/90 hover:text-peace-700 shadow-glow"
                     asChild
                   >
                     <Link to="/mood">
