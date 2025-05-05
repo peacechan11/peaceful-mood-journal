@@ -77,7 +77,7 @@ const BlogSection = ({ currentUser }: BlogSectionProps) => {
       setAllTags([...new Set(tags)]);
 
       // Transform data to match the BlogPostType
-      const transformedPosts = data.map(post => ({
+      const transformedPosts: BlogPostType[] = data.map(post => ({
         id: post.id,
         title: post.title,
         content: post.content,
@@ -92,7 +92,7 @@ const BlogSection = ({ currentUser }: BlogSectionProps) => {
         comments: 0, // We could implement a comments system later
         image: post.image_url,
         authorId: post.author_id,
-        status: post.status,
+        status: post.status as 'pending' | 'approved' | 'rejected',
       }));
 
       setPosts(transformedPosts);
