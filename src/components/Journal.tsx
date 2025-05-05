@@ -1,6 +1,7 @@
-import { useState } from 'react';
+
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Search, Filter, PlusCircle, X, Tag as TagIcon, Save } from 'lucide-react';
+import { Search, Filter, PlusCircle, X, Tag as TagIcon, Save, Loader2 } from 'lucide-react';
 import JournalEntry, { JournalEntryType } from './ui/JournalEntry';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -14,55 +15,73 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { toast } from 'sonner';
-
-// Sample journal entries data
-const sampleEntries: JournalEntryType[] = [
-  {
-    id: '1',
-    title: 'First day of meditation',
-    content: "Today I started my meditation journey. I found it challenging to sit still for even 5 minutes, but I'm proud of myself for trying. My mind was racing with thoughts about work and upcoming deadlines, but I tried to gently bring my focus back to my breath each time I noticed my mind wandering.\n\nI felt calmer afterward and I think I'll try again tomorrow. Maybe I'll use a guided meditation app to help me get started.",
-    date: new Date('2023-07-15'),
-    tags: ['meditation', 'beginnings', 'mindfulness'],
-    isPrivate: true,
-    mood: {
-      name: 'Peaceful',
-      emoji: '😌',
-    },
-  },
-  {
-    id: '2',
-    title: 'Reflecting on progress',
-    content: "It's been two weeks of consistent meditation practice. I can now sit for 10 minutes without feeling restless. I've noticed I'm more aware of my emotions throughout the day, and I don't react as quickly to minor annoyances.\n\nI had a difficult conversation with a colleague today that would have usually stressed me out, but I was able to stay calm and listen more effectively. Is this the meditation helping? It feels like I'm developing more space between stimulus and response.",
-    date: new Date('2023-07-29'),
-    tags: ['progress', 'meditation', 'work'],
-    isPrivate: false,
-    mood: {
-      name: 'Proud',
-      emoji: '😊',
-    },
-  },
-];
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Journal = () => {
-  const [entries, setEntries] = useState<JournalEntryType[]>(sampleEntries);
+  const [entries, setEntries] = useState<JournalEntryType[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [tags, setTags] = useState<string[]>([]);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   
   // New entry state
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [entryTitle, setEntryTitle] = useState('');
   const [entryContent, setEntryContent] = useState('');
   const [entryTags, setEntryTags] = useState('');
-  const [isPrivate, setIsPrivate] = useState(false);
+  const [isPrivate, setIsPrivate] = useState(true);
   const [editingEntry, setEditingEntry] = useState<JournalEntryType | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  const { user } = useAuth();
 
-  // Extract all unique tags from entries
-  useState(() => {
-    const allTags = entries.flatMap(entry => entry.tags);
-    setTags([...new Set(allTags)]);
-  });
+  useEffect(() => {
+    if (user) {
+      fetchJournalEntries();
+    } else {
+      setEntries([]);
+      setIsLoading(false);
+    }
+  }, [user]);
+
+  const fetchJournalEntries = async () => {
+    if (!user) return;
+
+    setIsLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('journal_entries')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      const journalEntries = data.map(entry => ({
+        id: entry.id,
+        title: entry.title,
+        content: entry.content,
+        date: new Date(entry.created_at),
+        tags: entry.tags || [],
+        isPrivate: entry.is_private,
+        mood: entry.mood && entry.mood_emoji ? {
+          name: entry.mood,
+          emoji: entry.mood_emoji,
+        } : undefined,
+      }));
+
+      setEntries(journalEntries);
+
+      // Extract all unique tags
+      const allTags = journalEntries.flatMap(entry => entry.tags);
+      setTags([...new Set(allTags)]);
+    } catch (error) {
+      console.error('Error fetching journal entries:', error);
+      toast.error('Failed to load journal entries');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const filteredEntries = entries.filter(entry => {
     const matchesSearch = searchTerm === '' || 
@@ -93,7 +112,7 @@ const Journal = () => {
     setEntryTitle('');
     setEntryContent('');
     setEntryTags('');
-    setIsPrivate(false);
+    setIsPrivate(true);
     setIsDialogOpen(true);
   };
 
@@ -106,21 +125,64 @@ const Journal = () => {
     setIsDialogOpen(true);
   };
 
-  const handleDeleteEntry = (id: string) => {
-    setEntries(prev => prev.filter(entry => entry.id !== id));
-    toast.success('Entry deleted successfully');
+  const handleDeleteEntry = async (id: string) => {
+    if (!user) {
+      toast.error('You must be signed in to delete entries');
+      return;
+    }
+
+    if (!confirm('Are you sure you want to delete this entry?')) {
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('journal_entries')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
+      setEntries(prev => prev.filter(entry => entry.id !== id));
+      toast.success('Entry deleted successfully');
+    } catch (error) {
+      console.error('Error deleting entry:', error);
+      toast.error('Failed to delete entry');
+    }
   };
 
-  const handleTogglePrivacy = (id: string, isPrivate: boolean) => {
-    setEntries(prev => 
-      prev.map(entry => 
-        entry.id === id ? { ...entry, isPrivate } : entry
-      )
-    );
-    toast.success(`Entry is now ${isPrivate ? 'private' : 'public'}`);
+  const handleTogglePrivacy = async (id: string, isPrivate: boolean) => {
+    if (!user) {
+      toast.error('You must be signed in to update entries');
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('journal_entries')
+        .update({ is_private: isPrivate })
+        .eq('id', id);
+
+      if (error) throw error;
+
+      setEntries(prev => 
+        prev.map(entry => 
+          entry.id === id ? { ...entry, isPrivate } : entry
+        )
+      );
+      toast.success(`Entry is now ${isPrivate ? 'private' : 'public'}`);
+    } catch (error) {
+      console.error('Error updating entry privacy:', error);
+      toast.error('Failed to update entry privacy');
+    }
   };
 
-  const handleSaveEntry = () => {
+  const handleSaveEntry = async () => {
+    if (!user) {
+      toast.error('You must be signed in to save entries');
+      return;
+    }
+
     if (!entryTitle.trim() || !entryContent.trim()) {
       toast.error('Please fill in all required fields');
       return;
@@ -128,42 +190,87 @@ const Journal = () => {
 
     setIsSubmitting(true);
 
-    // Process tags
-    const processedTags = entryTags
-      .split(',')
-      .map(tag => tag.trim())
-      .filter(tag => tag.length > 0);
+    try {
+      // Process tags
+      const processedTags = entryTags
+        .split(',')
+        .map(tag => tag.trim())
+        .filter(tag => tag.length > 0);
 
-    // Create new entry object
-    const newEntry: JournalEntryType = {
-      id: editingEntry ? editingEntry.id : Date.now().toString(),
-      title: entryTitle,
-      content: entryContent,
-      date: editingEntry ? editingEntry.date : new Date(),
-      tags: processedTags,
-      isPrivate,
-      mood: editingEntry?.mood,
-    };
-
-    // Simulate API call with timeout
-    setTimeout(() => {
       if (editingEntry) {
         // Update existing entry
+        const { error } = await supabase
+          .from('journal_entries')
+          .update({
+            title: entryTitle,
+            content: entryContent,
+            tags: processedTags,
+            is_private: isPrivate,
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', editingEntry.id);
+
+        if (error) throw error;
+
+        // Update local state
         setEntries(prev => 
           prev.map(entry => 
-            entry.id === editingEntry.id ? newEntry : entry
+            entry.id === editingEntry.id ? {
+              ...entry,
+              title: entryTitle,
+              content: entryContent,
+              tags: processedTags,
+              isPrivate,
+            } : entry
           )
         );
+        
         toast.success('Entry updated successfully');
       } else {
-        // Add new entry
-        setEntries(prev => [newEntry, ...prev]);
+        // Create new entry
+        const { data, error } = await supabase
+          .from('journal_entries')
+          .insert({
+            user_id: user.id,
+            title: entryTitle,
+            content: entryContent,
+            tags: processedTags,
+            is_private: isPrivate,
+          })
+          .select();
+
+        if (error) throw error;
+
+        if (data && data[0]) {
+          // Add new entry to local state
+          const newEntry: JournalEntryType = {
+            id: data[0].id,
+            title: entryTitle,
+            content: entryContent,
+            date: new Date(),
+            tags: processedTags,
+            isPrivate,
+          };
+  
+          setEntries(prev => [newEntry, ...prev]);
+          
+          // Update tags list if new tags were added
+          const newTags = processedTags.filter(tag => !tags.includes(tag));
+          if (newTags.length > 0) {
+            setTags(prev => [...prev, ...newTags]);
+          }
+        }
+        
         toast.success('New entry created successfully');
       }
       
       setIsDialogOpen(false);
+    } catch (error) {
+      console.error('Error saving journal entry:', error);
+      toast.error('Failed to save entry');
+    } finally {
       setIsSubmitting(false);
-    }, 800);
+    }
   };
 
   return (
@@ -225,7 +332,11 @@ const Journal = () => {
         )}
       </div>
 
-      {filteredEntries.length > 0 ? (
+      {isLoading ? (
+        <div className="flex justify-center items-center py-12">
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        </div>
+      ) : filteredEntries.length > 0 ? (
         <motion.div className="space-y-6">
           {filteredEntries.map((entry) => (
             <JournalEntry

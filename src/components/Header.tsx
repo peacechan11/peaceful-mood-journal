@@ -1,13 +1,23 @@
 
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, LogIn, LogOut, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/contexts/AuthContext';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const { user, userRole, signOut } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -51,8 +61,43 @@ const Header = () => {
               to={item.path} 
               label={item.label} 
               currentPath={location.pathname} 
+              requiresAuth={item.requiresAuth}
+              isLoggedIn={!!user}
             />
           ))}
+          
+          {user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="gap-2">
+                  <User className="h-4 w-4" />
+                  <span className="hidden md:inline">{userRole === 'moderator' ? 'Moderator' : 'Account'}</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>
+                  {userRole === 'moderator' ? 'Moderator Account' : 'User Account'}
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => signOut()}>
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Sign Out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <Button 
+              variant="outline" 
+              size="sm" 
+              asChild 
+              className="gap-2"
+            >
+              <Link to="/auth">
+                <LogIn className="h-4 w-4" />
+                <span>Sign In</span>
+              </Link>
+            </Button>
+          )}
         </nav>
 
         {/* Mobile Menu Toggle */}
@@ -73,18 +118,39 @@ const Header = () => {
           <div className="md:hidden absolute top-full left-0 w-full glass-card shadow-peace animate-fade-in py-4">
             <nav className="flex flex-col space-y-3 px-4">
               {navItems.map((item) => (
-                <Link
+                <NavLink
                   key={item.path}
                   to={item.path}
-                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                    location.pathname === item.path
-                      ? 'bg-primary/10 text-primary'
-                      : 'text-foreground hover:bg-primary/5'
-                  }`}
-                >
-                  {item.label}
-                </Link>
+                  label={item.label}
+                  currentPath={location.pathname}
+                  requiresAuth={item.requiresAuth}
+                  isLoggedIn={!!user}
+                  isMobile={true}
+                />
               ))}
+              
+              {user ? (
+                <>
+                  <div className="px-3 py-2 text-sm font-medium text-muted-foreground">
+                    {userRole === 'moderator' ? 'Moderator Account' : 'User Account'}
+                  </div>
+                  <button
+                    onClick={() => signOut()}
+                    className="flex items-center px-3 py-2 rounded-md text-sm font-medium text-foreground hover:bg-primary/5"
+                  >
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Sign Out
+                  </button>
+                </>
+              ) : (
+                <Link
+                  to="/auth"
+                  className="flex items-center px-3 py-2 rounded-md text-sm font-medium text-foreground hover:bg-primary/5"
+                >
+                  <LogIn className="h-4 w-4 mr-2" />
+                  Sign In
+                </Link>
+              )}
             </nav>
           </div>
         )}
@@ -93,8 +159,42 @@ const Header = () => {
   );
 };
 
-const NavLink = ({ to, label, currentPath }: { to: string; label: string; currentPath: string }) => {
+const NavLink = ({ 
+  to, 
+  label, 
+  currentPath, 
+  requiresAuth = false,
+  isLoggedIn = false,
+  isMobile = false 
+}: { 
+  to: string; 
+  label: string; 
+  currentPath: string;
+  requiresAuth?: boolean;
+  isLoggedIn?: boolean;
+  isMobile?: boolean;
+}) => {
   const isActive = currentPath === to;
+  
+  // If route requires auth and user is not logged in
+  if (requiresAuth && !isLoggedIn) {
+    return null;
+  }
+  
+  if (isMobile) {
+    return (
+      <Link
+        to={to}
+        className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+          isActive
+            ? 'bg-primary/10 text-primary'
+            : 'text-foreground hover:bg-primary/5'
+        }`}
+      >
+        {label}
+      </Link>
+    );
+  }
   
   return (
     <Link
@@ -112,10 +212,10 @@ const NavLink = ({ to, label, currentPath }: { to: string; label: string; curren
 };
 
 const navItems = [
-  { path: '/', label: 'Home' },
-  { path: '/mood', label: 'Mood Tracker' },
-  { path: '/journal', label: 'Journal' },
-  { path: '/blog', label: 'Community' },
+  { path: '/', label: 'Home', requiresAuth: false },
+  { path: '/mood', label: 'Mood Tracker', requiresAuth: true },
+  { path: '/journal', label: 'Journal', requiresAuth: true },
+  { path: '/blog', label: 'Community', requiresAuth: false },
 ];
 
 export default Header;

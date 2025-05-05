@@ -3,15 +3,11 @@ import { motion } from 'framer-motion';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import BlogSection from '@/components/BlogSection';
-
-// Mock user data - in a real app, this would come from authentication context
-const currentUserMock = {
-  id: 'user1',
-  name: 'Samantha Lee',
-  role: 'moderator' as const // Explicitly type as "moderator" | "user"
-};
+import { useAuth } from '@/contexts/AuthContext';
 
 const Blog = () => {
+  const { user, userRole } = useAuth();
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -30,7 +26,13 @@ const Blog = () => {
             </p>
           </div>
           
-          <BlogSection currentUser={currentUserMock} />
+          <BlogSection 
+            currentUser={user ? {
+              id: user.id,
+              name: user.user_metadata.username || user.email?.split('@')[0] || 'User',
+              role: userRole || 'user'
+            } : undefined} 
+          />
         </motion.div>
       </main>
       

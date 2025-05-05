@@ -1,12 +1,14 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Calendar, Clock, PlusCircle, Save } from 'lucide-react';
+import { Calendar, Clock, PlusCircle, Save, Loader2 } from 'lucide-react';
 import MoodSelector, { Mood } from './ui/MoodSelector';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface MoodEntry {
   id: string;
@@ -20,12 +22,62 @@ const MoodTracker = () => {
   const [notes, setNotes] = useState('');
   const [entries, setEntries] = useState<MoodEntry[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (user) {
+      fetchMoodEntries();
+    } else {
+      setEntries([]);
+      setIsLoading(false);
+    }
+  }, [user]);
+
+  const fetchMoodEntries = async () => {
+    if (!user) return;
+
+    setIsLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('mood_entries')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(10);
+
+      if (error) throw error;
+
+      const moodEntries = data.map(entry => ({
+        id: entry.id,
+        mood: {
+          id: 0, // We'll match this by name and emoji instead
+          name: entry.mood,
+          emoji: entry.emoji,
+          color: entry.color,
+        },
+        date: new Date(entry.created_at),
+        notes: entry.notes || '',
+      }));
+
+      setEntries(moodEntries);
+    } catch (error) {
+      console.error('Error fetching mood entries:', error);
+      toast.error('Failed to load mood entries');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleMoodSelect = (mood: Mood) => {
     setSelectedMood(mood);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    if (!user) {
+      toast.error('You must be signed in to save your mood');
+      return;
+    }
+
     if (!selectedMood) {
       toast.error('Please select a mood.');
       return;
@@ -33,22 +85,40 @@ const MoodTracker = () => {
 
     setIsSubmitting(true);
 
-    // Simulate API call
-    setTimeout(() => {
-      const newEntry: MoodEntry = {
-        id: Date.now().toString(),
-        mood: selectedMood,
-        date: new Date(),
-        notes: notes.trim(),
-      };
+    try {
+      const { data, error } = await supabase
+        .from('mood_entries')
+        .insert({
+          user_id: user.id,
+          mood: selectedMood.name,
+          emoji: selectedMood.emoji,
+          color: selectedMood.color,
+          notes: notes.trim(),
+        })
+        .select();
 
-      setEntries([newEntry, ...entries]);
+      if (error) throw error;
+
+      if (data && data[0]) {
+        const newEntry: MoodEntry = {
+          id: data[0].id,
+          mood: selectedMood,
+          date: new Date(),
+          notes: notes.trim(),
+        };
+
+        setEntries([newEntry, ...entries]);
+      }
+
       setSelectedMood(null);
       setNotes('');
-      setIsSubmitting(false);
-
       toast.success('Mood saved successfully!');
-    }, 800);
+    } catch (error) {
+      console.error('Error saving mood entry:', error);
+      toast.error('Failed to save your mood');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -113,7 +183,11 @@ const MoodTracker = () => {
           <h3 className="text-lg font-medium">Recent Entries</h3>
         </div>
 
-        {entries.length > 0 ? (
+        {isLoading ? (
+          <div className="flex justify-center items-center py-12">
+            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          </div>
+        ) : entries.length > 0 ? (
           <div className="space-y-4">
             {entries.map((entry) => (
               <motion.div
