@@ -11,6 +11,10 @@ import Journal from "./pages/Journal";
 import Blog from "./pages/Blog";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
+import HelpCenter from "./pages/HelpCenter";
+import Privacy from "./pages/Privacy";
+import Terms from "./pages/Terms";
+import AboutUs from "./pages/AboutUs";
 import Chatbot from "./components/Chatbot";
 import BreatheExercise from "./components/BreatheExercise";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -44,6 +48,10 @@ const App = () => (
             />
             <Route path="/blog" element={<Blog />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/helpcenter" element={<HelpCenter />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/aboutus" element={<AboutUs />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           <Chatbot />

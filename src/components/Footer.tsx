@@ -1,9 +1,29 @@
 
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Heart } from 'lucide-react';
+import { toast } from 'sonner';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
+  const [email, setEmail] = useState('');
+
+  const handleSubscribe = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!email || !email.includes('@')) {
+      toast.error('Please enter a valid email address');
+      return;
+    }
+    
+    // In a real app, you would send this to an API endpoint
+    toast.success('You have subscribed successfully', {
+      description: 'Thanks for subscribing to our newsletter!'
+    });
+    
+    // Reset the email field
+    setEmail('');
+  };
 
   return (
     <footer className="py-12 bg-background border-t border-border">
@@ -26,32 +46,76 @@ const Footer = () => {
           <div>
             <h4 className="font-medium text-foreground mb-4">Navigation</h4>
             <ul className="space-y-2">
-              {['Home', 'Mood Tracker', 'Journal', 'Community'].map((item, index) => (
-                <li key={index}>
-                  <Link
-                    to={index === 0 ? '/' : `/${item.toLowerCase().replace(' ', '')}`}
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    {item}
-                  </Link>
-                </li>
-              ))}
+              <li>
+                <Link
+                  to="/"
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Home
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/mood"
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Mood Tracker
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/journal"
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Journal
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/blog"
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Community
+                </Link>
+              </li>
             </ul>
           </div>
 
           <div>
             <h4 className="font-medium text-foreground mb-4">Resources</h4>
             <ul className="space-y-2">
-              {['Help Center', 'Privacy', 'Terms', 'About Us'].map((item) => (
-                <li key={item}>
-                  <Link
-                    to="#"
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    {item}
-                  </Link>
-                </li>
-              ))}
+              <li>
+                <Link
+                  to="/helpcenter"
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Help Center
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/privacy"
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Privacy
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/terms"
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Terms
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/aboutus"
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  About Us
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -60,11 +124,14 @@ const Footer = () => {
             <p className="text-sm text-muted-foreground mb-3">
               Get weekly insights and tips on mindfulness and mental wellness.
             </p>
-            <form className="flex">
+            <form className="flex" onSubmit={handleSubscribe}>
               <input
                 type="email"
                 placeholder="Your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="w-full px-3 py-2 bg-background border border-border rounded-l-md focus:outline-none focus:ring-1 focus:ring-primary text-sm"
+                required
               />
               <button
                 type="submit"
