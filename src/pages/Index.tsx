@@ -34,7 +34,7 @@ const Index = () => {
       description: 'Your data is encrypted and secure. We prioritize your privacy above all else.',
       icon: Shield,
       color: 'bg-peace-400',
-      link: '/',
+      link: '/privacy', // Changed from '/' to '/privacy'
     },
   ];
 

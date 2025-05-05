@@ -28,11 +28,11 @@ const HelpCenter = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Show success toast
+    // Show success toast with explicit 3-second duration
     toast({
       title: "Well received!",
       description: "Message to admin",
-      duration: 5000,
+      duration: 3000,
     });
     
     // Reset form
