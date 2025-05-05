@@ -1,9 +1,10 @@
 
 import { motion } from 'framer-motion';
 import { format } from 'date-fns';
-import { MessageCircle, Heart, Share2, Calendar, User, Tag as TagIcon } from 'lucide-react';
+import { MessageCircle, Heart, Share2, Calendar, User, Tag as TagIcon, Edit, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 
 export interface BlogPostType {
   id: string;
@@ -19,15 +20,19 @@ export interface BlogPostType {
   likes: number;
   comments: number;
   image?: string;
+  authorId?: string;
+  status?: 'pending' | 'approved' | 'rejected';
 }
 
 interface BlogPostProps {
   post: BlogPostType;
   className?: string;
   isExpanded?: boolean;
+  onEdit?: (post: BlogPostType) => void;
+  onDelete?: (postId: string) => void;
 }
 
-const BlogPost = ({ post, className, isExpanded = false }: BlogPostProps) => {
+const BlogPost = ({ post, className, isExpanded = false, onEdit, onDelete }: BlogPostProps) => {
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(post.likes);
   const [isFullView, setIsFullView] = useState(isExpanded);
@@ -46,10 +51,21 @@ const BlogPost = ({ post, className, isExpanded = false }: BlogPostProps) => {
     alert(`Sharing post: ${post.title}`);
   };
 
+  const handleEdit = () => {
+    if (onEdit) onEdit(post);
+    else alert(`Edit post: ${post.title}`);
+  };
+
+  const handleDelete = () => {
+    if (onDelete) onDelete(post.id);
+    else alert(`Delete post: ${post.title}`);
+  };
+
   return (
     <motion.article
       className={cn(
         'bg-white dark:bg-gray-900 rounded-xl border border-border shadow-sm overflow-hidden',
+        post.status === 'pending' && 'border-amber-300',
         className
       )}
       initial={{ opacity: 0, y: 20 }}
@@ -57,6 +73,12 @@ const BlogPost = ({ post, className, isExpanded = false }: BlogPostProps) => {
       transition={{ duration: 0.3 }}
       layout
     >
+      {post.status === 'pending' && (
+        <div className="bg-amber-50 dark:bg-amber-900/20 text-amber-800 dark:text-amber-200 px-6 py-2 text-sm font-medium flex items-center">
+          <span>This post is pending review by a moderator</span>
+        </div>
+      )}
+      
       {post.image && (
         <div className="aspect-video w-full overflow-hidden">
           <img 
@@ -133,12 +155,34 @@ const BlogPost = ({ post, className, isExpanded = false }: BlogPostProps) => {
             </button>
           </div>
           
-          <button
-            onClick={handleShare}
-            className="text-sm text-muted-foreground hover:text-foreground"
-          >
-            <Share2 className="h-4 w-4" />
-          </button>
+          <div className="flex items-center gap-2">
+            {onEdit && (
+              <>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={handleEdit} 
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  <Edit className="h-4 w-4" />
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={handleDelete} 
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </>
+            )}
+            <button
+              onClick={handleShare}
+              className="text-sm text-muted-foreground hover:text-foreground"
+            >
+              <Share2 className="h-4 w-4" />
+            </button>
+          </div>
         </div>
       </div>
     </motion.article>

@@ -4,6 +4,13 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import BlogSection from '@/components/BlogSection';
 
+// Mock user data - in a real app, this would come from authentication context
+const currentUserMock = {
+  id: 'user1',
+  name: 'Samantha Lee',
+  role: 'moderator' as const // or 'user'
+};
+
 const Blog = () => {
   return (
     <div className="min-h-screen flex flex-col">
@@ -23,7 +30,7 @@ const Blog = () => {
             </p>
           </div>
           
-          <BlogSection />
+          <BlogSection currentUser={currentUserMock} />
         </motion.div>
       </main>
       

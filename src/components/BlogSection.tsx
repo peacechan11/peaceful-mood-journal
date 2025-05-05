@@ -4,10 +4,10 @@ import { motion } from 'framer-motion';
 import BlogPost, { BlogPostType } from './ui/BlogPost';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Search, Tag as TagIcon, X } from 'lucide-react';
+import { Search, Tag as TagIcon, X, Plus, Eye, Check, MessageCircle } from 'lucide-react';
 
-// Sample blog posts data
-const samplePosts: BlogPostType[] = [
+// Updated blog post types to include author ID and status
+const samplePosts: (BlogPostType & { authorId: string, status: 'pending' | 'approved' | 'rejected' })[] = [
   {
     id: '1',
     title: 'Finding Peace Through Mindfulness Meditation',
@@ -22,6 +22,8 @@ const samplePosts: BlogPostType[] = [
     likes: 42,
     comments: 12,
     image: 'https://images.unsplash.com/photo-1545389336-cf090694435e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2064&q=80',
+    authorId: 'user1',
+    status: 'approved',
   },
   {
     id: '2',
@@ -37,26 +39,76 @@ const samplePosts: BlogPostType[] = [
     likes: 37,
     comments: 8,
     image: 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80',
+    authorId: 'user2',
+    status: 'approved',
+  },
+  {
+    id: '3',
+    title: 'Benefits of Cold Water Immersion',
+    excerpt: "Exploring the mental and physical benefits of cold water exposure therapy.",
+    content: "Cold water immersion is gaining popularity as a wellness practice with numerous benefits. From reduced inflammation to improved mental resilience, the science behind this ancient practice is fascinating. My personal journey with cold showers and ice baths has transformed my approach to stress management and recovery.",
+    author: {
+      name: 'Alex Rivera',
+      avatar: 'https://i.pravatar.cc/150?img=12',
+    },
+    date: new Date('2023-06-20'),
+    tags: ['wellness', 'cold therapy', 'mental resilience'],
+    likes: 24,
+    comments: 5,
+    image: 'https://images.unsplash.com/photo-1560090995-01632a28895b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2069&q=80',
+    authorId: 'user3',
+    status: 'pending',
   },
 ];
 
-const BlogSection = () => {
-  const [posts, setPosts] = useState<BlogPostType[]>(samplePosts);
+// Mock user data - in a real app, this would come from authentication
+const currentUserMock = {
+  id: 'user1',
+  name: 'Samantha Lee',
+  role: 'moderator' // or 'user'
+};
+
+interface BlogSectionProps {
+  currentUser?: {
+    id: string;
+    name: string;
+    role: 'moderator' | 'user';
+  };
+}
+
+const BlogSection = ({ currentUser = currentUserMock }: BlogSectionProps) => {
+  const [posts, setPosts] = useState<(BlogPostType & { 
+    authorId: string, 
+    status: 'pending' | 'approved' | 'rejected' 
+  })[]>(samplePosts);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
-
+  const [moderationView, setModerationView] = useState<boolean>(false);
+  
   // Extract all unique tags from posts
   const allTags = [...new Set(posts.flatMap(post => post.tags))];
 
   const filteredPosts = posts.filter(post => {
+    // Filter by search term
     const matchesSearch = searchTerm === '' || 
       post.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
       post.content.toLowerCase().includes(searchTerm.toLowerCase());
     
+    // Filter by selected tags
     const matchesTags = selectedTags.length === 0 || 
       selectedTags.every(tag => post.tags.includes(tag));
     
-    return matchesSearch && matchesTags;
+    // Filter based on user role and moderation view
+    const viewableByUser = currentUser.role === 'moderator' 
+      ? true 
+      : post.authorId === currentUser.id || post.status === 'approved';
+
+    // If in moderation view (moderators only), only show pending posts
+    const matchesModeration = moderationView 
+      ? post.status === 'pending'
+      : post.status !== 'rejected';  // Normal view - don't show rejected posts
+    
+    return matchesSearch && matchesTags && viewableByUser && matchesModeration;
   });
 
   const handleTagSelect = (tag: string) => {
@@ -72,18 +124,52 @@ const BlogSection = () => {
     setSelectedTags([]);
   };
 
+  const handleModerationAction = (postId: string, action: 'approve' | 'reject') => {
+    setPosts(prev => prev.map(post => 
+      post.id === postId 
+        ? { ...post, status: action === 'approve' ? 'approved' : 'rejected' } 
+        : post
+    ));
+  };
+
+  const handleCreatePost = () => {
+    // In a real app, this would open a form or redirect to create post page
+    alert('Create post functionality would open here');
+  };
+
   return (
     <div className="w-full max-w-4xl mx-auto">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
         <h2 className="text-2xl font-medium">Community Stories</h2>
-        <div className="relative w-full md:w-64">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search posts..."
-            className="pl-9"
-          />
+        <div className="flex items-center gap-2 w-full md:w-auto">
+          <div className="relative w-full md:w-64">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Search posts..."
+              className="pl-9"
+            />
+          </div>
+          
+          {currentUser && (
+            <Button onClick={handleCreatePost} size="sm" className="whitespace-nowrap">
+              <Plus className="h-4 w-4 mr-1" />
+              New Post
+            </Button>
+          )}
+
+          {currentUser?.role === 'moderator' && (
+            <Button 
+              onClick={() => setModerationView(!moderationView)} 
+              variant={moderationView ? "default" : "outline"} 
+              size="sm"
+              className="whitespace-nowrap"
+            >
+              <MessageCircle className="h-4 w-4 mr-1" />
+              {moderationView ? 'Pending Review' : 'Moderation'}
+            </Button>
+          )}
         </div>
       </div>
 
@@ -121,7 +207,43 @@ const BlogSection = () => {
       {filteredPosts.length > 0 ? (
         <motion.div className="space-y-8">
           {filteredPosts.map((post) => (
-            <BlogPost key={post.id} post={post} />
+            <div key={post.id} className="relative">
+              <BlogPost 
+                post={post} 
+                className={post.status === 'pending' ? "border-amber-300 border-2" : ""}
+              />
+              
+              {/* Moderation controls for pending posts - only visible to moderators */}
+              {currentUser?.role === 'moderator' && post.status === 'pending' && (
+                <div className="absolute top-4 right-4 flex gap-2">
+                  <Button 
+                    onClick={() => handleModerationAction(post.id, 'approve')}
+                    variant="outline"
+                    size="sm"
+                    className="bg-green-50 border-green-200 hover:bg-green-100 hover:text-green-800"
+                  >
+                    <Check className="h-4 w-4 mr-1 text-green-600" />
+                    Approve
+                  </Button>
+                  <Button 
+                    onClick={() => handleModerationAction(post.id, 'reject')}
+                    variant="outline"
+                    size="sm"
+                    className="bg-red-50 border-red-200 hover:bg-red-100 hover:text-red-800"
+                  >
+                    <X className="h-4 w-4 mr-1 text-red-600" />
+                    Reject
+                  </Button>
+                </div>
+              )}
+
+              {/* Owner indicator */}
+              {post.authorId === currentUser?.id && (
+                <div className="absolute top-4 right-4 bg-peace-100 text-peace-800 rounded-full px-2 py-1 text-xs font-medium">
+                  Your Post
+                </div>
+              )}
+            </div>
           ))}
         </motion.div>
       ) : (
@@ -131,15 +253,19 @@ const BlogSection = () => {
           </div>
           <h3 className="text-lg font-medium">No posts found</h3>
           <p className="text-muted-foreground mt-1 max-w-sm mx-auto">
-            Try adjusting your search or filters to find what you're looking for.
+            {moderationView 
+              ? "No posts pending review at the moment."
+              : "Try adjusting your search or filters to find what you're looking for."}
           </p>
-          <Button 
-            variant="outline" 
-            onClick={clearFilters}
-            className="mt-4"
-          >
-            Clear Filters
-          </Button>
+          {(searchTerm || selectedTags.length > 0) && (
+            <Button 
+              variant="outline" 
+              onClick={clearFilters}
+              className="mt-4"
+            >
+              Clear Filters
+            </Button>
+          )}
         </div>
       )}
     </div>
