@@ -1,9 +1,48 @@
 
+import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { MessageSquare } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 
 const HelpCenter = () => {
+  const { toast } = useToast();
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    message: ''
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { id, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [id]: value
+    }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Show success toast
+    toast({
+      title: "Well received!",
+      description: "Message to admin",
+      duration: 5000,
+    });
+    
+    // Reset form
+    setFormData({
+      name: '',
+      email: '',
+      message: ''
+    });
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -56,40 +95,50 @@ const HelpCenter = () => {
                 Need additional help? Our support team is ready to assist you with any questions or issues.
               </p>
               
-              <form className="space-y-4">
+              <form className="space-y-4" onSubmit={handleSubmit}>
                 <div>
                   <label htmlFor="name" className="block text-sm font-medium mb-1">Name</label>
-                  <input
+                  <Input
                     type="text"
                     id="name"
-                    className="w-full px-3 py-2 bg-background border border-border rounded-md focus:outline-none focus:ring-1 focus:ring-primary"
+                    value={formData.name}
+                    onChange={handleChange}
+                    required
+                    className="w-full"
                   />
                 </div>
                 
                 <div>
                   <label htmlFor="email" className="block text-sm font-medium mb-1">Email</label>
-                  <input
+                  <Input
                     type="email"
                     id="email"
-                    className="w-full px-3 py-2 bg-background border border-border rounded-md focus:outline-none focus:ring-1 focus:ring-primary"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                    className="w-full"
                   />
                 </div>
                 
                 <div>
                   <label htmlFor="message" className="block text-sm font-medium mb-1">Message</label>
-                  <textarea
+                  <Textarea
                     id="message"
                     rows={4}
-                    className="w-full px-3 py-2 bg-background border border-border rounded-md focus:outline-none focus:ring-1 focus:ring-primary"
-                  ></textarea>
+                    value={formData.message}
+                    onChange={handleChange}
+                    required
+                    className="w-full"
+                  />
                 </div>
                 
-                <button
+                <Button
                   type="submit"
                   className="bg-primary text-white px-4 py-2 rounded-md hover:bg-primary/90 transition-colors"
+                  startIcon={<MessageSquare className="w-4 h-4" />}
                 >
                   Send Message
-                </button>
+                </Button>
               </form>
             </section>
           </div>
