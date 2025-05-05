@@ -61,18 +61,18 @@ const samplePosts: (BlogPostType & { authorId: string, status: 'pending' | 'appr
   },
 ];
 
-// Mock user data - in a real app, this would come from authentication
+// Mock user data with correctly typed role property
 const currentUserMock = {
   id: 'user1',
   name: 'Samantha Lee',
-  role: 'moderator' // or 'user'
+  role: 'moderator' as const // Explicitly type as "moderator" | "user"
 };
 
 interface BlogSectionProps {
   currentUser?: {
     id: string;
     name: string;
-    role: 'moderator' | 'user';
+    role: 'moderator' | 'user'; // Make sure the interface defines the correct type
   };
 }
 

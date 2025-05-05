@@ -8,7 +8,7 @@ import BlogSection from '@/components/BlogSection';
 const currentUserMock = {
   id: 'user1',
   name: 'Samantha Lee',
-  role: 'moderator' as const // or 'user'
+  role: 'moderator' as const // Explicitly type as "moderator" | "user"
 };
 
 const Blog = () => {
