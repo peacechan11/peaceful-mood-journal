@@ -135,8 +135,8 @@ const HelpCenter = () => {
                 <Button
                   type="submit"
                   className="bg-primary text-white px-4 py-2 rounded-md hover:bg-primary/90 transition-colors"
-                  startIcon={<MessageSquare className="w-4 h-4" />}
                 >
+                  <MessageSquare className="w-4 h-4 mr-2" />
                   Send Message
                 </Button>
               </form>
