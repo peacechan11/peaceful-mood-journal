@@ -1,6 +1,6 @@
 
 import { motion } from 'framer-motion';
-import { FileShield } from 'lucide-react';
+import { FileText } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -19,7 +19,7 @@ const Terms = () => {
         >
           <div className="mb-10 text-center">
             <div className="mx-auto mb-6 h-12 w-12 rounded-full bg-serenity-100 flex items-center justify-center">
-              <FileShield className="h-6 w-6 text-secondary" />
+              <FileText className="h-6 w-6 text-secondary" />
             </div>
             <h1 className="text-3xl md:text-4xl font-bold mb-4">Terms of Service</h1>
             <p className="text-muted-foreground max-w-2xl mx-auto">
