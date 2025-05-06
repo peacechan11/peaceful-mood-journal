@@ -1,8 +1,9 @@
+
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import BlogPost, { BlogPostType } from './ui/BlogPost';
 import BlogComments from './ui/BlogComments';
-import { BlogCommentType } from './ui/BlogComment'; // Fixed import to get the type from BlogComment.tsx
+import { BlogCommentType } from './ui/BlogComment';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Search, Tag as TagIcon, X, Plus, Eye, Check, MessageCircle, Loader2 } from 'lucide-react';
@@ -178,6 +179,7 @@ const BlogSection = ({ currentUser }: BlogSectionProps) => {
   const fetchComments = async (postId: string) => {
     setIsLoadingComments(true);
     try {
+      // Updated query to correctly join profiles table
       const { data, error } = await supabase
         .from('blog_comments')
         .select(`
@@ -186,7 +188,7 @@ const BlogSection = ({ currentUser }: BlogSectionProps) => {
           created_at,
           updated_at,
           author_id,
-          profiles:author_id (username)
+          profiles (username)
         `)
         .eq('post_id', postId)
         .order('created_at', { ascending: true });
