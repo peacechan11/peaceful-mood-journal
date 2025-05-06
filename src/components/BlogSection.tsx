@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import BlogPost, { BlogPostType } from './ui/BlogPost';
@@ -179,7 +178,7 @@ const BlogSection = ({ currentUser }: BlogSectionProps) => {
   const fetchComments = async (postId: string) => {
     setIsLoadingComments(true);
     try {
-      // Updated query to correctly join profiles table
+      // Fix the query to correctly join the profiles table using proper foreign key relationship
       const { data, error } = await supabase
         .from('blog_comments')
         .select(`
@@ -188,7 +187,7 @@ const BlogSection = ({ currentUser }: BlogSectionProps) => {
           created_at,
           updated_at,
           author_id,
-          profiles (username)
+          author:profiles(username)
         `)
         .eq('post_id', postId)
         .order('created_at', { ascending: true });
@@ -200,8 +199,8 @@ const BlogSection = ({ currentUser }: BlogSectionProps) => {
         content: comment.content,
         author: {
           id: comment.author_id,
-          name: comment.profiles?.username || 'Anonymous',
-          avatar: `https://ui-avatars.com/api/?name=${comment.profiles?.username || 'Anon'}&background=random`
+          name: comment.author?.username || 'Anonymous',
+          avatar: `https://ui-avatars.com/api/?name=${comment.author?.username || 'Anon'}&background=random`
         },
         createdAt: new Date(comment.created_at),
         updatedAt: comment.updated_at ? new Date(comment.updated_at) : undefined
