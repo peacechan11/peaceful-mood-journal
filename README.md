@@ -3,7 +3,7 @@
 
 PeaceSync is a comprehensive mental health application designed to support emotional wellbeing through a variety of features that help users track their mood, journal their thoughts, and connect with a supportive community.
 
-
+![PeaceSync Dashboard](/placeholder.svg "PeaceSync Dashboard")
 
 ## Key Features
 
@@ -45,6 +45,61 @@ PeaceSync is a comprehensive mental health application designed to support emoti
 - **User Profiles**: Personalized user experience
 - **Role-Based Access**: Different permission levels (user, moderator)
 - **Data Privacy**: Secure storage of personal information
+
+## System Architecture
+
+### Entity-Relationship (ER) Diagram
+
+The following diagram illustrates the database structure and relationships between entities in PeaceSync:
+
+![Entity Relationship Diagram](/public/diagrams/er-diagram.svg "PeaceSync Entity Relationship Diagram")
+
+Key entities:
+- **profiles**: User profile information linked to authentication
+- **mood_entries**: Records of user mood data over time
+- **journal_entries**: Private journal entries with rich content
+- **blog_posts**: Community posts shared with others
+- **blog_comments**: User comments on blog posts
+- **blog_reactions**: User likes/reactions to blog posts
+
+### Class Diagram
+
+The application's component structure is represented in this class diagram:
+
+![Class Diagram](/public/diagrams/class-diagram.svg "PeaceSync Class Diagram")
+
+Major components:
+- **AuthContext**: Manages user authentication state
+- **App**: Main application container and routing
+- **MoodTracker**: Handles mood recording and visualization
+- **JournalEntry**: Manages journal content creation and editing
+- **BlogPost**: Displays and manages interaction with community posts
+- **Chatbot**: Provides AI-assisted support and resources
+
+### Use Case Diagram
+
+This diagram illustrates the main user interactions with the PeaceSync system:
+
+![Use Case Diagram](/public/diagrams/use-case-diagram.svg "PeaceSync Use Case Diagram")
+
+Primary use cases:
+- Track and visualize mood
+- Create and manage journal entries
+- Read and interact with community blog posts
+- Use guided breathing exercises
+- Chat with AI support assistant
+
+### Sequence Diagram
+
+The following sequence diagram shows the flow of interactions for blog post engagement:
+
+![Sequence Diagram](/public/diagrams/sequence-diagram.svg "Blog Post Interaction Sequence")
+
+This sequence illustrates:
+- Fetching blog posts from the database
+- User interactions (likes, comments)
+- Data persistence flow
+- UI updates based on interactions
 
 ## Technical Implementation
 

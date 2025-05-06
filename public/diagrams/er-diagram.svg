@@ -1,0 +1,114 @@
+
+<svg width="800" height="600" xmlns="http://www.w3.org/2000/svg">
+  <rect width="100%" height="100%" fill="#f8f9fa"/>
+  <text x="400" y="50" font-family="Arial" font-size="24" text-anchor="middle" fill="#333">Entity Relationship Diagram</text>
+  
+  <!-- Profiles table -->
+  <rect x="100" y="150" width="150" height="100" fill="#e9f5ff" stroke="#4a90e2" stroke-width="2" rx="5"/>
+  <text x="175" y="180" font-family="Arial" font-size="14" text-anchor="middle" fill="#333">profiles</text>
+  <line x1="125" y1="190" x2="225" y2="190" stroke="#4a90e2" stroke-width="1"/>
+  <text x="135" y="210" font-family="Arial" font-size="12" fill="#666">id</text>
+  <text x="135" y="230" font-family="Arial" font-size="12" fill="#666">username</text>
+  <text x="135" y="250" font-family="Arial" font-size="12" fill="#666">role</text>
+
+  <!-- Users table -->
+  <rect x="100" y="320" width="150" height="100" fill="#e9f5ff" stroke="#4a90e2" stroke-width="2" rx="5"/>
+  <text x="175" y="350" font-family="Arial" font-size="14" text-anchor="middle" fill="#333">users</text>
+  <line x1="125" y1="360" x2="225" y2="360" stroke="#4a90e2" stroke-width="1"/>
+  <text x="135" y="380" font-family="Arial" font-size="12" fill="#666">id</text>
+  <text x="135" y="400" font-family="Arial" font-size="12" fill="#666">email</text>
+  <text x="135" y="420" font-family="Arial" font-size="12" fill="#666">password</text>
+
+  <!-- Mood entries table -->
+  <rect x="350" y="150" width="150" height="120" fill="#eff8ff" stroke="#4a90e2" stroke-width="2" rx="5"/>
+  <text x="425" y="180" font-family="Arial" font-size="14" text-anchor="middle" fill="#333">mood_entries</text>
+  <line x1="375" y1="190" x2="475" y2="190" stroke="#4a90e2" stroke-width="1"/>
+  <text x="385" y="210" font-family="Arial" font-size="12" fill="#666">id</text>
+  <text x="385" y="230" font-family="Arial" font-size="12" fill="#666">user_id</text>
+  <text x="385" y="250" font-family="Arial" font-size="12" fill="#666">mood</text>
+  <text x="385" y="270" font-family="Arial" font-size="12" fill="#666">timestamp</text>
+
+  <!-- Journal entries table -->
+  <rect x="350" y="320" width="150" height="120" fill="#eff8ff" stroke="#4a90e2" stroke-width="2" rx="5"/>
+  <text x="425" y="350" font-family="Arial" font-size="14" text-anchor="middle" fill="#333">journal_entries</text>
+  <line x1="375" y1="360" x2="475" y2="360" stroke="#4a90e2" stroke-width="1"/>
+  <text x="385" y="380" font-family="Arial" font-size="12" fill="#666">id</text>
+  <text x="385" y="400" font-family="Arial" font-size="12" fill="#666">user_id</text>
+  <text x="385" y="420" font-family="Arial" font-size="12" fill="#666">title</text>
+  <text x="385" y="440" font-family="Arial" font-size="12" fill="#666">content</text>
+
+  <!-- Blog posts table -->
+  <rect x="600" y="150" width="150" height="120" fill="#f0f4ff" stroke="#4a90e2" stroke-width="2" rx="5"/>
+  <text x="675" y="180" font-family="Arial" font-size="14" text-anchor="middle" fill="#333">blog_posts</text>
+  <line x1="625" y1="190" x2="725" y2="190" stroke="#4a90e2" stroke-width="1"/>
+  <text x="635" y="210" font-family="Arial" font-size="12" fill="#666">id</text>
+  <text x="635" y="230" font-family="Arial" font-size="12" fill="#666">author_id</text>
+  <text x="635" y="250" font-family="Arial" font-size="12" fill="#666">title</text>
+  <text x="635" y="270" font-family="Arial" font-size="12" fill="#666">content</text>
+
+  <!-- Blog comments table -->
+  <rect x="520" y="320" width="150" height="120" fill="#f0f4ff" stroke="#4a90e2" stroke-width="2" rx="5"/>
+  <text x="595" y="350" font-family="Arial" font-size="14" text-anchor="middle" fill="#333">blog_comments</text>
+  <line x1="545" y1="360" x2="645" y2="360" stroke="#4a90e2" stroke-width="1"/>
+  <text x="555" y="380" font-family="Arial" font-size="12" fill="#666">id</text>
+  <text x="555" y="400" font-family="Arial" font-size="12" fill="#666">post_id</text>
+  <text x="555" y="420" font-family="Arial" font-size="12" fill="#666">author_id</text>
+  <text x="555" y="440" font-family="Arial" font-size="12" fill="#666">content</text>
+
+  <!-- Blog reactions table -->
+  <rect x="680" y="320" width="150" height="120" fill="#f0f4ff" stroke="#4a90e2" stroke-width="2" rx="5"/>
+  <text x="755" y="350" font-family="Arial" font-size="14" text-anchor="middle" fill="#333">blog_reactions</text>
+  <line x1="705" y1="360" x2="805" y2="360" stroke="#4a90e2" stroke-width="1"/>
+  <text x="715" y="380" font-family="Arial" font-size="12" fill="#666">id</text>
+  <text x="715" y="400" font-family="Arial" font-size="12" fill="#666">post_id</text>
+  <text x="715" y="420" font-family="Arial" font-size="12" fill="#666">user_id</text>
+  <text x="715" y="440" font-family="Arial" font-size="12" fill="#666">type</text>
+
+  <!-- Relationships -->
+  <!-- Users to Profiles -->
+  <line x1="175" y1="250" x2="175" y2="320" stroke="#4a90e2" stroke-width="2" stroke-dasharray="5,5"/>
+  <circle cx="175" cy="250" r="5" fill="#4a90e2"/>
+  <circle cx="175" cy="320" r="5" fill="#4a90e2"/>
+  <text x="190" y="290" font-family="Arial" font-size="12" fill="#666">1:1</text>
+
+  <!-- Profiles to Mood entries -->
+  <line x1="250" y1="180" x2="350" y2="180" stroke="#4a90e2" stroke-width="2"/>
+  <circle cx="250" cy="180" r="5" fill="#4a90e2"/>
+  <text x="300" y="170" font-family="Arial" font-size="12" fill="#666">1:n</text>
+  <polygon points="350,180 340,175 340,185" fill="#4a90e2"/>
+
+  <!-- Profiles to Journal entries -->
+  <line x1="250" y1="200" x2="320" y2="200" stroke="#4a90e2" stroke-width="2"/>
+  <line x1="320" y1="200" x2="320" y2="350" stroke="#4a90e2" stroke-width="2"/>
+  <line x1="320" y1="350" x2="350" y2="350" stroke="#4a90e2" stroke-width="2"/>
+  <circle cx="250" cy="200" r="5" fill="#4a90e2"/>
+  <text x="320" y="230" font-family="Arial" font-size="12" fill="#666">1:n</text>
+  <polygon points="350,350 340,345 340,355" fill="#4a90e2"/>
+
+  <!-- Profiles to Blog posts -->
+  <line x1="250" y1="170" x2="600" y2="170" stroke="#4a90e2" stroke-width="2"/>
+  <circle cx="250" cy="170" r="5" fill="#4a90e2"/>
+  <text x="430" y="160" font-family="Arial" font-size="12" fill="#666">1:n</text>
+  <polygon points="600,170 590,165 590,175" fill="#4a90e2"/>
+
+  <!-- Blog posts to Comments -->
+  <line x1="650" y1="270" x2="650" y2="320" stroke="#4a90e2" stroke-width="2"/>
+  <circle cx="650" cy="270" r="5" fill="#4a90e2"/>
+  <text x="665" y="295" font-family="Arial" font-size="12" fill="#666">1:n</text>
+  <polygon points="650,320 645,310 655,310" fill="#4a90e2"/>
+
+  <!-- Blog posts to Reactions -->
+  <line x1="700" y1="270" x2="750" y2="320" stroke="#4a90e2" stroke-width="2"/>
+  <circle cx="700" cy="270" r="5" fill="#4a90e2"/>
+  <text x="740" y="295" font-family="Arial" font-size="12" fill="#666">1:n</text>
+  <polygon points="750,320 745,310 755,310" fill="#4a90e2"/>
+
+  <!-- Profiles to Reactions -->
+  <line x1="250" y1="220" x2="550" y2="220" stroke="#4a90e2" stroke-width="2" stroke-dasharray="5,5"/>
+  <line x1="550" y1="220" x2="550" y2="460" stroke="#4a90e2" stroke-width="2" stroke-dasharray="5,5"/>
+  <line x1="550" y1="460" x2="750" y2="460" stroke="#4a90e2" stroke-width="2" stroke-dasharray="5,5"/>
+  <line x1="750" y1="460" x2="750" y2="440" stroke="#4a90e2" stroke-width="2" stroke-dasharray="5,5"/>
+  <circle cx="250" cy="220" r="5" fill="#4a90e2"/>
+  <text x="400" y="215" font-family="Arial" font-size="12" fill="#666">1:n</text>
+  <polygon points="750,440 745,450 755,450" fill="#4a90e2"/>
+</svg>

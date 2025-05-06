@@ -1,0 +1,110 @@
+
+<svg width="800" height="600" xmlns="http://www.w3.org/2000/svg">
+  <rect width="100%" height="100%" fill="#f8f9fa"/>
+  <text x="400" y="50" font-family="Arial" font-size="24" text-anchor="middle" fill="#333">Use Case Diagram</text>
+  
+  <!-- System boundary -->
+  <rect x="200" y="80" width="500" height="500" fill="#f8f9fa" stroke="#666" stroke-width="2" stroke-dasharray="5,5" rx="10"/>
+  <text x="450" y="110" font-family="Arial" font-size="18" text-anchor="middle" fill="#333">PeaceSync System</text>
+  
+  <!-- User actor -->
+  <circle cx="100" cy="270" r="20" fill="#f5f5f5" stroke="#333" stroke-width="2"/>
+  <line x1="100" y1="290" x2="100" y2="340" stroke="#333" stroke-width="2"/>
+  <line x1="70" y1="310" x2="130" y2="310" stroke="#333" stroke-width="2"/>
+  <line x1="100" y1="340" x2="70" y2="390" stroke="#333" stroke-width="2"/>
+  <line x1="100" y1="340" x2="130" y2="390" stroke="#333" stroke-width="2"/>
+  <text x="100" y="420" font-family="Arial" font-size="14" text-anchor="middle" fill="#333">User</text>
+  
+  <!-- Moderator actor -->
+  <circle cx="100" cy="470" r="20" fill="#f5f5f5" stroke="#333" stroke-width="2"/>
+  <line x1="100" y1="490" x2="100" y2="540" stroke="#333" stroke-width="2"/>
+  <line x1="70" y1="510" x2="130" y2="510" stroke="#333" stroke-width="2"/>
+  <line x1="100" y1="540" x2="70" y2="590" stroke="#333" stroke-width="2"/>
+  <line x1="100" y1="540" x2="130" y2="590" stroke="#333" stroke-width="2"/>
+  <text x="100" y="560" font-family="Arial" font-size="14" text-anchor="middle" fill="#333">Moderator</text>
+  
+  <!-- Use cases -->
+  <!-- Track Mood -->
+  <ellipse cx="350" cy="150" rx="80" ry="30" fill="#e9f5ff" stroke="#4a90e2" stroke-width="2"/>
+  <text x="350" y="155" font-family="Arial" font-size="12" text-anchor="middle" fill="#333">Track Mood</text>
+  
+  <!-- View Mood History -->
+  <ellipse cx="500" cy="150" rx="80" ry="30" fill="#e9f5ff" stroke="#4a90e2" stroke-width="2"/>
+  <text x="500" y="155" font-family="Arial" font-size="12" text-anchor="middle" fill="#333">View Mood History</text>
+  
+  <!-- Create Journal -->
+  <ellipse cx="350" cy="230" rx="80" ry="30" fill="#eff8ff" stroke="#4a90e2" stroke-width="2"/>
+  <text x="350" y="235" font-family="Arial" font-size="12" text-anchor="middle" fill="#333">Create Journal</text>
+  
+  <!-- Search Journals -->
+  <ellipse cx="500" cy="230" rx="80" ry="30" fill="#eff8ff" stroke="#4a90e2" stroke-width="2"/>
+  <text x="500" y="235" font-family="Arial" font-size="12" text-anchor="middle" fill="#333">Search Journals</text>
+  
+  <!-- Read Blog -->
+  <ellipse cx="350" cy="310" rx="80" ry="30" fill="#f0f4ff" stroke="#4a90e2" stroke-width="2"/>
+  <text x="350" y="315" font-family="Arial" font-size="12" text-anchor="middle" fill="#333">Read Blog</text>
+  
+  <!-- Create Blog Post -->
+  <ellipse cx="500" cy="310" rx="80" ry="30" fill="#f0f4ff" stroke="#4a90e2" stroke-width="2"/>
+  <text x="500" y="315" font-family="Arial" font-size="12" text-anchor="middle" fill="#333">Create Blog Post</text>
+  
+  <!-- Comment on Post -->
+  <ellipse cx="350" cy="390" rx="80" ry="30" fill="#f0f4ff" stroke="#4a90e2" stroke-width="2"/>
+  <text x="350" y="395" font-family="Arial" font-size="12" text-anchor="middle" fill="#333">Comment on Post</text>
+  
+  <!-- React to Post -->
+  <ellipse cx="500" cy="390" rx="80" ry="30" fill="#f0f4ff" stroke="#4a90e2" stroke-width="2"/>
+  <text x="500" y="395" font-family="Arial" font-size="12" text-anchor="middle" fill="#333">React to Post</text>
+  
+  <!-- Breathe Exercise -->
+  <ellipse cx="350" cy="470" rx="80" ry="30" fill="#f5f0ff" stroke="#4a90e2" stroke-width="2"/>
+  <text x="350" y="475" font-family="Arial" font-size="12" text-anchor="middle" fill="#333">Breathe Exercise</text>
+  
+  <!-- Chat with Bot -->
+  <ellipse cx="500" cy="470" rx="80" ry="30" fill="#f5f0ff" stroke="#4a90e2" stroke-width="2"/>
+  <text x="500" y="475" font-family="Arial" font-size="12" text-anchor="middle" fill="#333">Chat with Bot</text>
+  
+  <!-- Moderate Blog -->
+  <ellipse cx="350" cy="530" rx="80" ry="30" fill="#f0f4ff" stroke="#4a90e2" stroke-width="2"/>
+  <text x="350" y="535" font-family="Arial" font-size="12" text-anchor="middle" fill="#333">Moderate Blog</text>
+  
+  <!-- Relationships -->
+  <!-- User to Track Mood -->
+  <line x1="130" y1="270" x2="270" y2="150" stroke="#333" stroke-width="1"/>
+  
+  <!-- User to Create Journal -->
+  <line x1="130" y1="280" x2="270" y2="230" stroke="#333" stroke-width="1"/>
+  
+  <!-- User to Read Blog -->
+  <line x1="130" y1="290" x2="270" y2="310" stroke="#333" stroke-width="1"/>
+  
+  <!-- User to Comment on Post -->
+  <line x1="130" y1="300" x2="270" y2="390" stroke="#333" stroke-width="1"/>
+  
+  <!-- User to Breathe Exercise -->
+  <line x1="130" y1="310" x2="270" y2="470" stroke="#333" stroke-width="1"/>
+  
+  <!-- Moderator to Moderate Blog -->
+  <line x1="130" y1="470" x2="270" y2="530" stroke="#333" stroke-width="1"/>
+  
+  <!-- Include relationships with dashed lines -->
+  <!-- Track Mood includes View Mood History -->
+  <line x1="430" y1="150" x2="420" y2="150" stroke="#666" stroke-width="1" stroke-dasharray="5,5"/>
+  <polygon points="420,150 430,145 430,155" fill="#666"/>
+  
+  <!-- Create Journal includes Search Journals -->
+  <line x1="430" y1="230" x2="420" y2="230" stroke="#666" stroke-width="1" stroke-dasharray="5,5"/>
+  <polygon points="420,230 430,225 430,235" fill="#666"/>
+  
+  <!-- Read Blog includes Create Blog Post -->
+  <line x1="430" y1="310" x2="420" y2="310" stroke="#666" stroke-width="1" stroke-dasharray="5,5"/>
+  <polygon points="420,310 430,305 430,315" fill="#666"/>
+  
+  <!-- Comment on Post extends React to Post -->
+  <line x1="430" y1="390" x2="420" y2="390" stroke="#666" stroke-width="1" stroke-dasharray="5,5"/>
+  <polygon points="420,390 430,385 430,395" fill="#666"/>
+  
+  <!-- Breathe Exercise extends Chat with Bot -->
+  <line x1="430" y1="470" x2="420" y2="470" stroke="#666" stroke-width="1" stroke-dasharray="5,5"/>
+  <polygon points="420,470 430,465 430,475" fill="#666"/>
+</svg>

@@ -1,0 +1,95 @@
+
+<svg width="800" height="600" xmlns="http://www.w3.org/2000/svg">
+  <rect width="100%" height="100%" fill="#f8f9fa"/>
+  <text x="400" y="50" font-family="Arial" font-size="24" text-anchor="middle" fill="#333">Class Diagram</text>
+  
+  <!-- AuthContext class -->
+  <rect x="50" y="100" width="200" height="140" fill="#e9f5ff" stroke="#4a90e2" stroke-width="2" rx="5"/>
+  <text x="150" y="130" font-family="Arial" font-size="16" text-anchor="middle" fill="#333">AuthContext</text>
+  <line x1="70" y1="140" x2="230" y2="140" stroke="#4a90e2" stroke-width="1"/>
+  <text x="80" y="160" font-family="Arial" font-size="12" fill="#666">- user: User</text>
+  <text x="80" y="180" font-family="Arial" font-size="12" fill="#666">- userRole: string</text>
+  <line x1="70" y1="190" x2="230" y2="190" stroke="#4a90e2" stroke-width="1"/>
+  <text x="80" y="210" font-family="Arial" font-size="12" fill="#666">+ login(): void</text>
+  <text x="80" y="230" font-family="Arial" font-size="12" fill="#666">+ logout(): void</text>
+  
+  <!-- App class -->
+  <rect x="300" y="300" width="200" height="120" fill="#e9f5ff" stroke="#4a90e2" stroke-width="2" rx="5"/>
+  <text x="400" y="330" font-family="Arial" font-size="16" text-anchor="middle" fill="#333">App</text>
+  <line x1="320" y1="340" x2="480" y2="340" stroke="#4a90e2" stroke-width="1"/>
+  <text x="330" y="360" font-family="Arial" font-size="12" fill="#666">- queryClient: QueryClient</text>
+  <line x1="320" y1="370" x2="480" y2="370" stroke="#4a90e2" stroke-width="1"/>
+  <text x="330" y="390" font-family="Arial" font-size="12" fill="#666">+ render(): ReactNode</text>
+  
+  <!-- ProtectedRoute class -->
+  <rect x="300" y="100" width="200" height="120" fill="#e9f5ff" stroke="#4a90e2" stroke-width="2" rx="5"/>
+  <text x="400" y="130" font-family="Arial" font-size="16" text-anchor="middle" fill="#333">ProtectedRoute</text>
+  <line x1="320" y1="140" x2="480" y2="140" stroke="#4a90e2" stroke-width="1"/>
+  <text x="330" y="160" font-family="Arial" font-size="12" fill="#666">- children: ReactNode</text>
+  <line x1="320" y1="170" x2="480" y2="170" stroke="#4a90e2" stroke-width="1"/>
+  <text x="330" y="190" font-family="Arial" font-size="12" fill="#666">+ render(): ReactNode</text>
+  
+  <!-- Header class -->
+  <rect x="550" y="100" width="200" height="120" fill="#e9f5ff" stroke="#4a90e2" stroke-width="2" rx="5"/>
+  <text x="650" y="130" font-family="Arial" font-size="16" text-anchor="middle" fill="#333">Header</text>
+  <line x1="570" y1="140" x2="730" y2="140" stroke="#4a90e2" stroke-width="1"/>
+  <text x="580" y="160" font-family="Arial" font-size="12" fill="#666">- user: User</text>
+  <text x="580" y="180" font-family="Arial" font-size="12" fill="#666">- userRole: string</text>
+  <line x1="570" y1="190" x2="730" y2="190" stroke="#4a90e2" stroke-width="1"/>
+  <text x="580" y="210" font-family="Arial" font-size="12" fill="#666">+ render(): ReactNode</text>
+  
+  <!-- MoodTracker class -->
+  <rect x="50" y="450" width="200" height="130" fill="#eff8ff" stroke="#4a90e2" stroke-width="2" rx="5"/>
+  <text x="150" y="480" font-family="Arial" font-size="16" text-anchor="middle" fill="#333">MoodTracker</text>
+  <line x1="70" y1="490" x2="230" y2="490" stroke="#4a90e2" stroke-width="1"/>
+  <text x="80" y="510" font-family="Arial" font-size="12" fill="#666">- moods: Mood[]</text>
+  <text x="80" y="530" font-family="Arial" font-size="12" fill="#666">- selectedMood: string</text>
+  <line x1="70" y1="540" x2="230" y2="540" stroke="#4a90e2" stroke-width="1"/>
+  <text x="80" y="560" font-family="Arial" font-size="12" fill="#666">+ addMood(): void</text>
+  
+  <!-- JournalEntry class -->
+  <rect x="300" y="450" width="200" height="130" fill="#eff8ff" stroke="#4a90e2" stroke-width="2" rx="5"/>
+  <text x="400" y="480" font-family="Arial" font-size="16" text-anchor="middle" fill="#333">JournalEntry</text>
+  <line x1="320" y1="490" x2="480" y2="490" stroke="#4a90e2" stroke-width="1"/>
+  <text x="330" y="510" font-family="Arial" font-size="12" fill="#666">- entry: Entry</text>
+  <text x="330" y="530" font-family="Arial" font-size="12" fill="#666">- isEditing: boolean</text>
+  <line x1="320" y1="540" x2="480" y2="540" stroke="#4a90e2" stroke-width="1"/>
+  <text x="330" y="560" font-family="Arial" font-size="12" fill="#666">+ saveEntry(): void</text>
+  
+  <!-- BlogPost class -->
+  <rect x="550" y="450" width="200" height="130" fill="#f0f4ff" stroke="#4a90e2" stroke-width="2" rx="5"/>
+  <text x="650" y="480" font-family="Arial" font-size="16" text-anchor="middle" fill="#333">BlogPost</text>
+  <line x1="570" y1="490" x2="730" y2="490" stroke="#4a90e2" stroke-width="1"/>
+  <text x="580" y="510" font-family="Arial" font-size="12" fill="#666">- post: Post</text>
+  <text x="580" y="530" font-family="Arial" font-size="12" fill="#666">- liked: boolean</text>
+  <line x1="570" y1="540" x2="730" y2="540" stroke="#4a90e2" stroke-width="1"/>
+  <text x="580" y="560" font-family="Arial" font-size="12" fill="#666">+ handleLike(): void</text>
+  
+  <!-- Relationships -->
+  <!-- AuthContext to App -->
+  <line x1="150" y1="240" x2="150" y2="350" stroke="#4a90e2" stroke-width="2"/>
+  <line x1="150" y1="350" x2="300" y2="350" stroke="#4a90e2" stroke-width="2"/>
+  <polygon points="300,350 290,345 290,355" fill="#4a90e2"/>
+  
+  <!-- AuthContext to Header -->
+  <line x1="250" y1="150" x2="550" y2="150" stroke="#4a90e2" stroke-width="2"/>
+  <polygon points="550,150 540,145 540,155" fill="#4a90e2"/>
+  
+  <!-- App to ProtectedRoute -->
+  <line x1="400" y1="300" x2="400" y2="220" stroke="#4a90e2" stroke-width="2"/>
+  <polygon points="400,220 395,230 405,230" fill="#4a90e2"/>
+  
+  <!-- App to MoodTracker -->
+  <line x1="300" y1="360" x2="150" y2="360" stroke="#4a90e2" stroke-width="2"/>
+  <line x1="150" y1="360" x2="150" y2="450" stroke="#4a90e2" stroke-width="2"/>
+  <polygon points="150,450 145,440 155,440" fill="#4a90e2"/>
+  
+  <!-- App to JournalEntry -->
+  <line x1="400" y1="420" x2="400" y2="450" stroke="#4a90e2" stroke-width="2"/>
+  <polygon points="400,450 395,440 405,440" fill="#4a90e2"/>
+  
+  <!-- App to BlogPost -->
+  <line x1="500" y1="360" x2="650" y2="360" stroke="#4a90e2" stroke-width="2"/>
+  <line x1="650" y1="360" x2="650" y2="450" stroke="#4a90e2" stroke-width="2"/>
+  <polygon points="650,450 645,440 655,440" fill="#4a90e2"/>
+</svg>
