@@ -3,7 +3,7 @@
 
 PeaceSync is a comprehensive mental health application designed to support emotional wellbeing through a variety of features that help users track their mood, journal their thoughts, and connect with a supportive community.
 
-![PeaceSync Logo](/logo.png)
+
 
 ## Key Features
 
