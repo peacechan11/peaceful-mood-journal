@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import BlogPost, { BlogPostType } from './ui/BlogPost';
@@ -178,7 +179,7 @@ const BlogSection = ({ currentUser }: BlogSectionProps) => {
   const fetchComments = async (postId: string) => {
     setIsLoadingComments(true);
     try {
-      // Fix the query to correctly join the profiles table using proper foreign key relationship
+      // First get the comments
       const { data, error } = await supabase
         .from('blog_comments')
         .select(`
@@ -186,27 +187,38 @@ const BlogSection = ({ currentUser }: BlogSectionProps) => {
           content,
           created_at,
           updated_at,
-          author_id,
-          author:profiles(username)
+          author_id
         `)
         .eq('post_id', postId)
         .order('created_at', { ascending: true });
         
       if (error) throw error;
       
-      const transformedComments: BlogCommentType[] = data.map(comment => ({
-        id: comment.id,
-        content: comment.content,
-        author: {
-          id: comment.author_id,
-          name: comment.author?.username || 'Anonymous',
-          avatar: `https://ui-avatars.com/api/?name=${comment.author?.username || 'Anon'}&background=random`
-        },
-        createdAt: new Date(comment.created_at),
-        updatedAt: comment.updated_at ? new Date(comment.updated_at) : undefined
-      }));
+      // For each comment, fetch the author information separately
+      const commentsWithAuthors = await Promise.all(
+        data.map(async (comment) => {
+          // Get author information
+          const { data: authorData } = await supabase
+            .from('profiles')
+            .select('username')
+            .eq('id', comment.author_id)
+            .single();
+          
+          return {
+            id: comment.id,
+            content: comment.content,
+            author: {
+              id: comment.author_id,
+              name: authorData?.username || 'Anonymous',
+              avatar: `https://ui-avatars.com/api/?name=${authorData?.username || 'Anon'}&background=random`
+            },
+            createdAt: new Date(comment.created_at),
+            updatedAt: comment.updated_at ? new Date(comment.updated_at) : undefined
+          };
+        })
+      );
       
-      setComments(transformedComments);
+      setComments(commentsWithAuthors);
     } catch (error) {
       console.error('Error fetching comments:', error);
       toast({
