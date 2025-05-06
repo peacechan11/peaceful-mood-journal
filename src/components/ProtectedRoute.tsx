@@ -1,7 +1,7 @@
 
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { toast } from 'sonner';
+import { toast } from '@/hooks/use-toast';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -19,18 +19,20 @@ const ProtectedRoute = ({ children, requiredRole }: ProtectedRouteProps) => {
 
   // If not logged in, redirect to auth page
   if (!user) {
-    toast.error('Please sign in to access this page', {
-      id: 'auth-required',
-      duration: 3000,
+    toast({
+      title: "Authentication Required",
+      description: "Please sign in to access this page",
+      variant: "destructive",
     });
     return <Navigate to="/auth" state={{ from: location }} replace />;
   }
 
   // If role is required but user doesn't have it
   if (requiredRole && userRole !== requiredRole && userRole !== 'moderator') {
-    toast.error(`You need ${requiredRole} privileges to access this page`, {
-      id: 'role-required',
-      duration: 3000,
+    toast({
+      title: "Access Denied",
+      description: `You need ${requiredRole} privileges to access this page`,
+      variant: "destructive",
     });
     return <Navigate to="/" replace />;
   }

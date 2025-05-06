@@ -2,11 +2,12 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import BlogPost, { BlogPostType } from './ui/BlogPost';
+import BlogComments, { BlogCommentType } from './ui/BlogComments';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Search, Tag as TagIcon, X, Plus, Eye, Check, MessageCircle, Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { toast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import {
   Dialog,
@@ -35,6 +36,12 @@ const BlogSection = ({ currentUser }: BlogSectionProps) => {
   const [allTags, setAllTags] = useState<string[]>([]);
   const { user } = useAuth();
   
+  // New state for comments and selected post for comments
+  const [activePostId, setActivePostId] = useState<string | null>(null);
+  const [comments, setComments] = useState<BlogCommentType[]>([]);
+  const [isLoadingComments, setIsLoadingComments] = useState(false);
+  const [userReactions, setUserReactions] = useState<Record<string, boolean>>({});
+  
   // New post state
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [postTitle, setPostTitle] = useState('');
@@ -46,7 +53,38 @@ const BlogSection = ({ currentUser }: BlogSectionProps) => {
 
   useEffect(() => {
     fetchPosts();
-  }, [currentUser, moderationView]);
+    if (user) {
+      fetchUserReactions();
+    }
+  }, [currentUser, moderationView, user]);
+  
+  useEffect(() => {
+    if (activePostId) {
+      fetchComments(activePostId);
+    }
+  }, [activePostId]);
+
+  const fetchUserReactions = async () => {
+    if (!user) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from('blog_reactions')
+        .select('post_id')
+        .eq('user_id', user.id);
+        
+      if (error) throw error;
+      
+      const reactions: Record<string, boolean> = {};
+      data.forEach(item => {
+        reactions[item.post_id] = true;
+      });
+      
+      setUserReactions(reactions);
+    } catch (error) {
+      console.error('Error fetching user reactions:', error);
+    }
+  };
 
   const fetchPosts = async () => {
     setIsLoading(true);
@@ -73,8 +111,36 @@ const BlogSection = ({ currentUser }: BlogSectionProps) => {
       if (error) throw error;
 
       // Extract all unique tags
-      const tags = data.flatMap(post => post.tags);
+      const tags = data.flatMap(post => post.tags || []);
       setAllTags([...new Set(tags)]);
+
+      // Count comments for each post
+      const commentCounts = await Promise.all(data.map(async post => {
+        const { count, error: countError } = await supabase
+          .from('blog_comments')
+          .select('id', { count: 'exact', head: true })
+          .eq('post_id', post.id);
+          
+        return { postId: post.id, count: countError ? 0 : (count || 0) };
+      }));
+      
+      const commentCountMap = Object.fromEntries(
+        commentCounts.map(({ postId, count }) => [postId, count])
+      );
+      
+      // Count reactions for each post
+      const reactionCounts = await Promise.all(data.map(async post => {
+        const { count, error: countError } = await supabase
+          .from('blog_reactions')
+          .select('id', { count: 'exact', head: true })
+          .eq('post_id', post.id);
+          
+        return { postId: post.id, count: countError ? 0 : (count || 0) };
+      }));
+      
+      const reactionCountMap = Object.fromEntries(
+        reactionCounts.map(({ postId, count }) => [postId, count])
+      );
 
       // Transform data to match the BlogPostType
       const transformedPosts: BlogPostType[] = data.map(post => ({
@@ -88,19 +154,67 @@ const BlogSection = ({ currentUser }: BlogSectionProps) => {
         },
         date: new Date(post.created_at),
         tags: post.tags || [],
-        likes: 0, // We could implement a likes system later
-        comments: 0, // We could implement a comments system later
+        likes: reactionCountMap[post.id] || 0,
+        comments: commentCountMap[post.id] || 0,
         image: post.image_url,
         authorId: post.author_id,
         status: post.status as 'pending' | 'approved' | 'rejected',
+        hasReacted: user ? !!userReactions[post.id] : false
       }));
 
       setPosts(transformedPosts);
     } catch (error) {
       console.error('Error fetching posts:', error);
-      toast.error('Failed to load posts');
+      toast({
+        title: "Error",
+        description: "Failed to load posts",
+        variant: "destructive"
+      });
     } finally {
       setIsLoading(false);
+    }
+  };
+  
+  const fetchComments = async (postId: string) => {
+    setIsLoadingComments(true);
+    try {
+      const { data, error } = await supabase
+        .from('blog_comments')
+        .select(`
+          id,
+          content,
+          created_at,
+          updated_at,
+          author_id,
+          profiles:author_id (username)
+        `)
+        .eq('post_id', postId)
+        .order('created_at', { ascending: true });
+        
+      if (error) throw error;
+      
+      const transformedComments: BlogCommentType[] = data.map(comment => ({
+        id: comment.id,
+        content: comment.content,
+        author: {
+          id: comment.author_id,
+          name: comment.profiles?.username || 'Anonymous',
+          avatar: `https://ui-avatars.com/api/?name=${comment.profiles?.username || 'Anon'}&background=random`
+        },
+        createdAt: new Date(comment.created_at),
+        updatedAt: comment.updated_at ? new Date(comment.updated_at) : undefined
+      }));
+      
+      setComments(transformedComments);
+    } catch (error) {
+      console.error('Error fetching comments:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load comments",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoadingComments(false);
     }
   };
 
@@ -142,7 +256,11 @@ const BlogSection = ({ currentUser }: BlogSectionProps) => {
 
   const handleModerationAction = async (postId: string, action: 'approve' | 'reject') => {
     if (!currentUser || currentUser.role !== 'moderator') {
-      toast.error('Only moderators can perform this action');
+      toast({
+        title: "Error",
+        description: "Only moderators can perform this action",
+        variant: "destructive"
+      });
       return;
     }
 
@@ -161,10 +279,17 @@ const BlogSection = ({ currentUser }: BlogSectionProps) => {
           : post
       ));
 
-      toast.success(`Post ${action === 'approve' ? 'approved' : 'rejected'} successfully`);
+      toast({
+        title: "Success",
+        description: `Post ${action === 'approve' ? 'approved' : 'rejected'} successfully`
+      });
     } catch (error) {
       console.error(`Error ${action}ing post:`, error);
-      toast.error(`Failed to ${action} post`);
+      toast({
+        title: "Error",
+        description: `Failed to ${action} post`,
+        variant: "destructive"
+      });
     }
   };
 
@@ -188,7 +313,11 @@ const BlogSection = ({ currentUser }: BlogSectionProps) => {
 
   const handleDeletePost = async (postId: string) => {
     if (!user) {
-      toast.error('You must be logged in to delete posts');
+      toast({
+        title: "Error",
+        description: "You must be logged in to delete posts",
+        variant: "destructive"
+      });
       return;
     }
 
@@ -204,21 +333,84 @@ const BlogSection = ({ currentUser }: BlogSectionProps) => {
 
       // Update local state
       setPosts(prev => prev.filter(post => post.id !== postId));
-      toast.success('Post deleted successfully');
+      
+      if (activePostId === postId) {
+        setActivePostId(null);
+        setComments([]);
+      }
+      
+      toast({
+        title: "Success",
+        description: "Post deleted successfully"
+      });
     } catch (error) {
       console.error('Error deleting post:', error);
-      toast.error('Failed to delete post');
+      toast({
+        title: "Error",
+        description: "Failed to delete post",
+        variant: "destructive"
+      });
+    }
+  };
+  
+  const handleReaction = async (postId: string, isAdding: boolean) => {
+    if (!user) {
+      toast({
+        title: "Error",
+        description: "You must be logged in to react to posts",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    try {
+      if (isAdding) {
+        const { error } = await supabase
+          .from('blog_reactions')
+          .insert({
+            post_id: postId,
+            user_id: user.id
+          });
+          
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from('blog_reactions')
+          .delete()
+          .eq('post_id', postId)
+          .eq('user_id', user.id);
+          
+        if (error) throw error;
+      }
+      
+      // Update local state
+      setUserReactions(prev => ({
+        ...prev,
+        [postId]: isAdding
+      }));
+      
+    } catch (error) {
+      console.error('Error handling reaction:', error);
+      throw error;
     }
   };
 
   const handleSavePost = async () => {
     if (!user) {
-      toast.error('You must be logged in to save posts');
+      toast({
+        title: "Error",
+        description: "You must be logged in to save posts",
+        variant: "destructive"
+      });
       return;
     }
 
     if (!postTitle.trim() || !postContent.trim()) {
-      toast.error('Please fill in all required fields');
+      toast({
+        title: "Error",
+        description: "Please fill in all required fields",
+        variant: "destructive"
+      });
       return;
     }
 
@@ -262,7 +454,10 @@ const BlogSection = ({ currentUser }: BlogSectionProps) => {
             : post
         ));
 
-        toast.success('Post updated successfully');
+        toast({
+          title: "Success",
+          description: "Post updated successfully"
+        });
       } else {
         // Create new post
         const { data, error } = await supabase
@@ -301,19 +496,35 @@ const BlogSection = ({ currentUser }: BlogSectionProps) => {
           setPosts(prev => [newPost, ...prev]);
         }
 
-        toast.success(
-          currentUser?.role === 'moderator' 
+        toast({
+          title: "Success",
+          description: currentUser?.role === 'moderator' 
             ? 'Post published successfully' 
             : 'Post submitted for review'
-        );
+        });
       }
 
       setIsDialogOpen(false);
     } catch (error) {
       console.error('Error saving post:', error);
-      toast.error('Failed to save post');
+      toast({
+        title: "Error",
+        description: "Failed to save post",
+        variant: "destructive"
+      });
     } finally {
       setIsSubmitting(false);
+    }
+  };
+  
+  const handleCommentClick = (postId: string) => {
+    if (activePostId === postId) {
+      // If clicking the same post, close comments
+      setActivePostId(null);
+      setComments([]);
+    } else {
+      // Open comments for the selected post
+      setActivePostId(postId);
     }
   };
 
@@ -395,13 +606,29 @@ const BlogSection = ({ currentUser }: BlogSectionProps) => {
               <BlogPost 
                 post={post} 
                 className={post.status === 'pending' ? "border-amber-300 border-2" : ""}
+                isExpanded={activePostId === post.id}
                 onEdit={post.authorId === currentUser?.id ? handleEditPost : undefined}
                 onDelete={
                   (currentUser?.role === 'moderator' || post.authorId === currentUser?.id) 
                     ? handleDeletePost 
                     : undefined
                 }
+                onReaction={handleReaction}
+                onCommentClick={handleCommentClick}
+                isLoggedIn={!!user}
               />
+              
+              {/* Display comments when the post is active */}
+              {activePostId === post.id && (
+                <div className="bg-white dark:bg-gray-900 rounded-xl border border-border shadow-sm overflow-hidden mt-4 p-6">
+                  <BlogComments 
+                    postId={post.id}
+                    comments={comments}
+                    onCommentsChange={() => fetchComments(post.id)}
+                    isLoading={isLoadingComments}
+                  />
+                </div>
+              )}
               
               {/* Moderation controls for pending posts - only visible to moderators */}
               {currentUser?.role === 'moderator' && post.status === 'pending' && (

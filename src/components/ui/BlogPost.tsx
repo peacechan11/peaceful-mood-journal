@@ -1,10 +1,12 @@
 
 import { motion } from 'framer-motion';
 import { format } from 'date-fns';
-import { MessageCircle, Heart, Share2, Calendar, User, Tag as TagIcon, Edit, Trash2 } from 'lucide-react';
+import { MessageCircle, Heart, Share2, Calendar, User, Tag as TagIcon, Edit, Trash2, Link, Copy, Check } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { toast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
 
 export interface BlogPostType {
   id: string;
@@ -22,6 +24,7 @@ export interface BlogPostType {
   image?: string;
   authorId?: string;
   status?: 'pending' | 'approved' | 'rejected';
+  hasReacted?: boolean;
 }
 
 interface BlogPostProps {
@@ -30,25 +33,85 @@ interface BlogPostProps {
   isExpanded?: boolean;
   onEdit?: (post: BlogPostType) => void;
   onDelete?: (postId: string) => void;
+  onReaction?: (postId: string, hasReacted: boolean) => Promise<void>;
+  onCommentClick?: (postId: string) => void;
+  isLoggedIn?: boolean;
 }
 
-const BlogPost = ({ post, className, isExpanded = false, onEdit, onDelete }: BlogPostProps) => {
-  const [liked, setLiked] = useState(false);
+const BlogPost = ({ 
+  post, 
+  className, 
+  isExpanded = false, 
+  onEdit, 
+  onDelete,
+  onReaction,
+  onCommentClick,
+  isLoggedIn = false
+}: BlogPostProps) => {
+  const [liked, setLiked] = useState(post.hasReacted || false);
   const [likeCount, setLikeCount] = useState(post.likes);
   const [isFullView, setIsFullView] = useState(isExpanded);
+  const [copied, setCopied] = useState(false);
+  
+  const { userRole } = useAuth();
+  const isModerator = userRole === 'moderator';
 
-  const toggleLike = () => {
-    if (liked) {
-      setLikeCount(prev => prev - 1);
-    } else {
-      setLikeCount(prev => prev + 1);
+  const handleReaction = async () => {
+    if (!isLoggedIn) {
+      toast({
+        title: "Authentication required",
+        description: "Please sign in to like posts",
+        variant: "destructive"
+      });
+      return;
     }
-    setLiked(!liked);
+    
+    if (onReaction) {
+      try {
+        await onReaction(post.id, !liked);
+        if (liked) {
+          setLikeCount(prev => prev - 1);
+        } else {
+          setLikeCount(prev => prev + 1);
+        }
+        setLiked(!liked);
+      } catch (error) {
+        console.error('Error handling reaction:', error);
+        toast({
+          title: "Error",
+          description: "Failed to process your reaction",
+          variant: "destructive"
+        });
+      }
+    } else {
+      if (liked) {
+        setLikeCount(prev => prev - 1);
+      } else {
+        setLikeCount(prev => prev + 1);
+      }
+      setLiked(!liked);
+    }
   };
 
-  const handleShare = () => {
-    // In a real app, this would implement sharing functionality
-    alert(`Sharing post: ${post.title}`);
+  const handleShare = async () => {
+    const url = `${window.location.origin}/blog/${post.id}`;
+    
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      toast({
+        title: "Link copied!",
+        description: "Post link has been copied to clipboard"
+      });
+      setTimeout(() => setCopied(false), 2000);
+    } catch (error) {
+      console.error('Error copying to clipboard:', error);
+      toast({
+        title: "Copy failed",
+        description: "Could not copy link to clipboard",
+        variant: "destructive"
+      });
+    }
   };
 
   const handleEdit = () => {
@@ -59,6 +122,12 @@ const BlogPost = ({ post, className, isExpanded = false, onEdit, onDelete }: Blo
   const handleDelete = () => {
     if (onDelete) onDelete(post.id);
     else alert(`Delete post: ${post.title}`);
+  };
+
+  const handleCommentClick = () => {
+    if (onCommentClick) {
+      onCommentClick(post.id);
+    }
   };
 
   return (
@@ -112,7 +181,7 @@ const BlogPost = ({ post, className, isExpanded = false, onEdit, onDelete }: Blo
           )}
         </div>
         
-        {!isFullView && (
+        {!isFullView && !isExpanded && (
           <button
             onClick={() => setIsFullView(true)}
             className="mt-2 text-sm text-peace-600 hover:text-peace-700 font-medium"
@@ -138,50 +207,58 @@ const BlogPost = ({ post, className, isExpanded = false, onEdit, onDelete }: Blo
         <div className="mt-6 pt-4 border-t border-border flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <button
-              onClick={toggleLike}
+              onClick={handleReaction}
               className={`flex items-center space-x-1 text-sm ${
                 liked ? 'text-red-500' : 'text-muted-foreground hover:text-foreground'
               }`}
+              disabled={!isLoggedIn}
             >
               <Heart className={`h-4 w-4 ${liked ? 'fill-red-500' : ''}`} />
               <span>{likeCount}</span>
             </button>
             
             <button
+              onClick={handleCommentClick}
               className="flex items-center space-x-1 text-sm text-muted-foreground hover:text-foreground"
             >
               <MessageCircle className="h-4 w-4" />
               <span>{post.comments}</span>
             </button>
+            
+            <button
+              onClick={handleShare}
+              className="flex items-center space-x-1 text-sm text-muted-foreground hover:text-foreground"
+              aria-label="Share post"
+            >
+              {copied ? (
+                <Check className="h-4 w-4 text-green-500" />
+              ) : (
+                <Share2 className="h-4 w-4" />
+              )}
+            </button>
           </div>
           
           <div className="flex items-center gap-2">
-            {onEdit && (
-              <>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  onClick={handleEdit} 
-                  className="text-muted-foreground hover:text-foreground"
-                >
-                  <Edit className="h-4 w-4" />
-                </Button>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  onClick={handleDelete} 
-                  className="text-muted-foreground hover:text-foreground"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </>
+            {(onEdit && (post.authorId === useAuth().user?.id)) && (
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={handleEdit} 
+                className="text-muted-foreground hover:text-foreground"
+              >
+                <Edit className="h-4 w-4" />
+              </Button>
             )}
-            <button
-              onClick={handleShare}
-              className="text-sm text-muted-foreground hover:text-foreground"
-            >
-              <Share2 className="h-4 w-4" />
-            </button>
+            {(onDelete && (post.authorId === useAuth().user?.id || isModerator)) && (
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={handleDelete} 
+                className="text-muted-foreground hover:text-foreground"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            )}
           </div>
         </div>
       </div>
