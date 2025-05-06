@@ -7,6 +7,12 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { supabase } from '@/integrations/supabase/client';
 
 export interface BlogPostType {
   id: string;
@@ -25,6 +31,11 @@ export interface BlogPostType {
   authorId?: string;
   status?: 'pending' | 'approved' | 'rejected';
   hasReacted?: boolean;
+}
+
+interface ReactorType {
+  username: string;
+  reaction_type: string;
 }
 
 interface BlogPostProps {
@@ -52,9 +63,30 @@ const BlogPost = ({
   const [likeCount, setLikeCount] = useState(post.likes);
   const [isFullView, setIsFullView] = useState(isExpanded);
   const [copied, setCopied] = useState(false);
+  const [reactors, setReactors] = useState<ReactorType[]>([]);
+  const [loadingReactors, setLoadingReactors] = useState(false);
   
   const { userRole } = useAuth();
   const isModerator = userRole === 'moderator';
+
+  const fetchReactors = async () => {
+    setLoadingReactors(true);
+    try {
+      const { data, error } = await supabase
+        .from('reactions_with_users')
+        .select('username, reaction_type')
+        .eq('post_id', post.id)
+        .order('created_at', { ascending: false });
+        
+      if (error) throw error;
+      
+      setReactors(data || []);
+    } catch (error) {
+      console.error('Error fetching reactors:', error);
+    } finally {
+      setLoadingReactors(false);
+    }
+  };
 
   const handleReaction = async () => {
     if (!isLoggedIn) {
@@ -212,9 +244,46 @@ const BlogPost = ({
                 liked ? 'text-red-500' : 'text-muted-foreground hover:text-foreground'
               }`}
               disabled={!isLoggedIn}
+              aria-label={liked ? "Unlike post" : "Like post"}
             >
               <Heart className={`h-4 w-4 ${liked ? 'fill-red-500' : ''}`} />
-              <span>{likeCount}</span>
+              {likeCount > 0 && (
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <span 
+                      className="cursor-pointer hover:underline"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        fetchReactors();
+                      }}
+                    >{likeCount}</span>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-48 p-2">
+                    <h4 className="font-medium mb-2">People who reacted</h4>
+                    {loadingReactors ? (
+                      <div className="text-center py-2 text-sm text-muted-foreground">
+                        Loading...
+                      </div>
+                    ) : reactors.length > 0 ? (
+                      <div className="max-h-48 overflow-y-auto">
+                        {reactors.map((reactor, index) => (
+                          <div 
+                            key={index} 
+                            className="py-1 px-1 text-sm flex items-center"
+                          >
+                            <User className="h-3 w-3 mr-2 text-muted-foreground" />
+                            <span>{reactor.username}</span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-2 text-sm text-muted-foreground">
+                        No reactions yet
+                      </div>
+                    )}
+                  </PopoverContent>
+                </Popover>
+              )}
             </button>
             
             <button

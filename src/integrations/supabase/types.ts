@@ -234,7 +234,25 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      reactions_with_users: {
+        Row: {
+          created_at: string | null
+          id: string | null
+          post_id: string | null
+          reaction_type: string | null
+          user_id: string | null
+          username: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blog_reactions_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "blog_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       [_ in never]: never
