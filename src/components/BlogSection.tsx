@@ -1,8 +1,8 @@
-
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import BlogPost, { BlogPostType } from './ui/BlogPost';
-import BlogComments, { BlogCommentType } from './ui/BlogComments';
+import BlogComments from './ui/BlogComments';
+import { BlogCommentType } from './ui/BlogComment'; // Fixed import to get the type from BlogComment.tsx
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Search, Tag as TagIcon, X, Plus, Eye, Check, MessageCircle, Loader2 } from 'lucide-react';
