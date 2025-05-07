@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   Table, 
   TableHeader, 
@@ -19,6 +19,10 @@ const BlogTable = () => {
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const { user } = useAuth();
+  
+  useEffect(() => {
+    loadBlogPosts();
+  }, []);
   
   const loadBlogPosts = async () => {
     setIsLoading(true);
@@ -40,11 +44,6 @@ const BlogTable = () => {
       setIsLoading(false);
     }
   };
-
-  // Load blog posts when component mounts
-  useState(() => {
-    loadBlogPosts();
-  });
   
   return (
     <div className="space-y-4">
@@ -55,7 +54,7 @@ const BlogTable = () => {
       {blogPosts.length === 0 ? (
         <div className="text-center py-10 border rounded-lg bg-gray-50 dark:bg-gray-900">
           <p className="text-xl font-medium text-gray-600 dark:text-gray-400">This table is empty</p>
-          <p className="mt-2 text-muted-foreground">Add rows to your table to get started.</p>
+          <p className="mt-2 text-muted-foreground">Add posts to see them listed here.</p>
         </div>
       ) : (
         <Table>

@@ -1,8 +1,8 @@
-
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import BlogPost, { BlogPostType } from './ui/BlogPost';
 import BlogComments from './ui/BlogComments';
+import SampleBlogPosts from './ui/SampleBlogPosts';
 import { BlogCommentType } from './ui/BlogComment';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -35,6 +35,7 @@ const BlogSection = ({ currentUser }: BlogSectionProps) => {
   const [moderationView, setModerationView] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState(true);
   const [allTags, setAllTags] = useState<string[]>([]);
+  const [showSamplePosts, setShowSamplePosts] = useState(false);
   const { user } = useAuth();
   
   // New state for comments and selected post for comments
@@ -111,6 +112,15 @@ const BlogSection = ({ currentUser }: BlogSectionProps) => {
 
       if (error) throw error;
 
+      // If no posts found, show sample posts
+      if (!data || data.length === 0) {
+        setShowSamplePosts(true);
+        setIsLoading(false);
+        return;
+      }
+
+      setShowSamplePosts(false);
+
       // Extract all unique tags
       const tags = data.flatMap(post => post.tags || []);
       setAllTags([...new Set(tags)]);
@@ -171,6 +181,8 @@ const BlogSection = ({ currentUser }: BlogSectionProps) => {
         description: "Failed to load posts",
         variant: "destructive"
       });
+      // Show sample posts on error
+      setShowSamplePosts(true);
     } finally {
       setIsLoading(false);
     }
@@ -541,6 +553,118 @@ const BlogSection = ({ currentUser }: BlogSectionProps) => {
     }
   };
 
+  const renderContent = () => {
+    if (isLoading) {
+      return (
+        <div className="flex justify-center items-center py-12">
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        </div>
+      );
+    }
+
+    if (showSamplePosts) {
+      return (
+        <motion.div>
+          <SampleBlogPosts 
+            currentUser={currentUser}
+            onCommentClick={handleCommentClick}
+          />
+        </motion.div>
+      );
+    }
+
+    if (filteredPosts.length > 0) {
+      return (
+        <motion.div className="space-y-8">
+          {filteredPosts.map((post) => (
+            <div key={post.id} className="relative">
+              <BlogPost 
+                post={post} 
+                className={post.status === 'pending' ? "border-amber-300 border-2" : ""}
+                isExpanded={activePostId === post.id}
+                onEdit={post.authorId === currentUser?.id ? handleEditPost : undefined}
+                onDelete={
+                  (currentUser?.role === 'moderator' || post.authorId === currentUser?.id) 
+                    ? handleDeletePost 
+                    : undefined
+                }
+                onReaction={handleReaction}
+                onCommentClick={handleCommentClick}
+                isLoggedIn={!!user}
+              />
+              
+              {/* Display comments when the post is active */}
+              {activePostId === post.id && (
+                <div className="bg-white dark:bg-gray-900 rounded-xl border border-border shadow-sm overflow-hidden mt-4 p-6">
+                  <BlogComments 
+                    postId={post.id}
+                    comments={comments}
+                    onCommentsChange={() => fetchComments(post.id)}
+                    isLoading={isLoadingComments}
+                  />
+                </div>
+              )}
+              
+              {/* Moderation controls for pending posts - only visible to moderators */}
+              {currentUser?.role === 'moderator' && post.status === 'pending' && (
+                <div className="absolute top-4 right-4 flex gap-2">
+                  <Button 
+                    onClick={() => handleModerationAction(post.id, 'approve')}
+                    variant="outline"
+                    size="sm"
+                    className="bg-green-50 border-green-200 hover:bg-green-100 hover:text-green-800"
+                  >
+                    <Check className="h-4 w-4 mr-1 text-green-600" />
+                    Approve
+                  </Button>
+                  <Button 
+                    onClick={() => handleModerationAction(post.id, 'reject')}
+                    variant="outline"
+                    size="sm"
+                    className="bg-red-50 border-red-200 hover:bg-red-100 hover:text-red-800"
+                  >
+                    <X className="h-4 w-4 mr-1 text-red-600" />
+                    Reject
+                  </Button>
+                </div>
+              )}
+
+              {/* Owner indicator */}
+              {post.authorId === currentUser?.id && (
+                <div className="absolute top-4 right-4 bg-peace-100 text-peace-800 rounded-full px-2 py-1 text-xs font-medium">
+                  Your Post
+                </div>
+              )}
+            </div>
+          ))}
+        </motion.div>
+      );
+    }
+
+    return (
+      <div className="text-center py-12 border border-dashed border-border rounded-xl">
+        <div className="w-16 h-16 mx-auto flex items-center justify-center rounded-full bg-accent mb-4">
+          <Search className="h-8 w-8 text-muted-foreground" />
+        </div>
+        <h3 className="text-lg font-medium">No posts found</h3>
+        <p className="text-muted-foreground mt-1 max-w-sm mx-auto">
+          {moderationView 
+            ? "No posts pending review at the moment."
+            : "Try adjusting your search or filters to find what you're looking for."}
+        </p>
+        {(searchTerm || selectedTags.length > 0) && (
+          <Button 
+            variant="outline" 
+            onClick={clearFilters}
+            className="mt-4"
+          >
+            Clear Filters
+          </Button>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div className="w-full max-w-4xl mx-auto">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
@@ -608,96 +732,7 @@ const BlogSection = ({ currentUser }: BlogSectionProps) => {
         </div>
       )}
 
-      {isLoading ? (
-        <div className="flex justify-center items-center py-12">
-          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-        </div>
-      ) : filteredPosts.length > 0 ? (
-        <motion.div className="space-y-8">
-          {filteredPosts.map((post) => (
-            <div key={post.id} className="relative">
-              <BlogPost 
-                post={post} 
-                className={post.status === 'pending' ? "border-amber-300 border-2" : ""}
-                isExpanded={activePostId === post.id}
-                onEdit={post.authorId === currentUser?.id ? handleEditPost : undefined}
-                onDelete={
-                  (currentUser?.role === 'moderator' || post.authorId === currentUser?.id) 
-                    ? handleDeletePost 
-                    : undefined
-                }
-                onReaction={handleReaction}
-                onCommentClick={handleCommentClick}
-                isLoggedIn={!!user}
-              />
-              
-              {/* Display comments when the post is active */}
-              {activePostId === post.id && (
-                <div className="bg-white dark:bg-gray-900 rounded-xl border border-border shadow-sm overflow-hidden mt-4 p-6">
-                  <BlogComments 
-                    postId={post.id}
-                    comments={comments}
-                    onCommentsChange={() => fetchComments(post.id)}
-                    isLoading={isLoadingComments}
-                  />
-                </div>
-              )}
-              
-              {/* Moderation controls for pending posts - only visible to moderators */}
-              {currentUser?.role === 'moderator' && post.status === 'pending' && (
-                <div className="absolute top-4 right-4 flex gap-2">
-                  <Button 
-                    onClick={() => handleModerationAction(post.id, 'approve')}
-                    variant="outline"
-                    size="sm"
-                    className="bg-green-50 border-green-200 hover:bg-green-100 hover:text-green-800"
-                  >
-                    <Check className="h-4 w-4 mr-1 text-green-600" />
-                    Approve
-                  </Button>
-                  <Button 
-                    onClick={() => handleModerationAction(post.id, 'reject')}
-                    variant="outline"
-                    size="sm"
-                    className="bg-red-50 border-red-200 hover:bg-red-100 hover:text-red-800"
-                  >
-                    <X className="h-4 w-4 mr-1 text-red-600" />
-                    Reject
-                  </Button>
-                </div>
-              )}
-
-              {/* Owner indicator */}
-              {post.authorId === currentUser?.id && (
-                <div className="absolute top-4 right-4 bg-peace-100 text-peace-800 rounded-full px-2 py-1 text-xs font-medium">
-                  Your Post
-                </div>
-              )}
-            </div>
-          ))}
-        </motion.div>
-      ) : (
-        <div className="text-center py-12 border border-dashed border-border rounded-xl">
-          <div className="w-16 h-16 mx-auto flex items-center justify-center rounded-full bg-accent mb-4">
-            <Search className="h-8 w-8 text-muted-foreground" />
-          </div>
-          <h3 className="text-lg font-medium">No posts found</h3>
-          <p className="text-muted-foreground mt-1 max-w-sm mx-auto">
-            {moderationView 
-              ? "No posts pending review at the moment."
-              : "Try adjusting your search or filters to find what you're looking for."}
-          </p>
-          {(searchTerm || selectedTags.length > 0) && (
-            <Button 
-              variant="outline" 
-              onClick={clearFilters}
-              className="mt-4"
-            >
-              Clear Filters
-            </Button>
-          )}
-        </div>
-      )}
+      {renderContent()}
 
       {/* Dialog for creating/editing posts */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
