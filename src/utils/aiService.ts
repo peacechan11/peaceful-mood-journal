@@ -2,7 +2,7 @@
 import { toast } from "sonner";
 
 // Gemini AI API endpoint
-const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent";
+const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
 
 // You can get a free API key at https://aistudio.google.com/app/apikey
 // This is just a placeholder - users should replace it with their own valid key
