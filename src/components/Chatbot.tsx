@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Avatar } from '@/components/ui/avatar';
 import { Card } from '@/components/ui/card';
 import { toast } from 'sonner';
+import { getAIResponse, getFallbackResponse } from '@/utils/aiService';
 
 // Define types for messages
 type MessageRole = 'user' | 'assistant';
@@ -17,73 +18,6 @@ interface Message {
   role: MessageRole;
   timestamp: Date;
 }
-
-// Predefined responses for the chatbot
-const responses = {
-  greeting: [
-    "Hello! I'm PeaceSync's AI assistant. How can I help with your mental wellbeing today?",
-    "Hi there! I'm here to support your mental health journey. What's on your mind?",
-    "Welcome to PeaceSync! I'm your AI wellbeing companion. How are you feeling today?"
-  ],
-  anxiety: [
-    "I understand anxiety can be challenging. Try taking slow, deep breaths for 2 minutes. Inhale for 4 counts, hold for 4, exhale for 6.",
-    "When you're feeling anxious, grounding techniques can help. Try naming 5 things you can see, 4 things you can touch, 3 things you can hear, 2 things you can smell, and 1 thing you can taste.",
-    "Anxiety often involves worrying about the future. Try focusing on the present moment by paying attention to your immediate surroundings and sensations."
-  ],
-  depression: [
-    "I'm sorry you're feeling down. Remember that small steps matter - try to do one tiny enjoyable activity today, even something as simple as stepping outside for 5 minutes.",
-    "Depression can make everything feel difficult. Be gentle with yourself and acknowledge your feelings without judgment. Would you like to try a simple mood-boosting exercise?",
-    "When feeling depressed, our thoughts often become negative. Try challenging these thoughts by asking: 'Is there another way to look at this situation?'"
-  ],
-  sleep: [
-    "For better sleep, try establishing a consistent bedtime routine. Avoid screens an hour before bed, and keep your bedroom cool, dark, and quiet.",
-    "If racing thoughts keep you awake, try the 4-7-8 breathing technique: inhale for 4 seconds, hold for 7, exhale for 8. This can help calm your mind.",
-    "Consider writing down your worries before bed to 'transfer' them out of your mind and onto paper, which can help quiet your thoughts."
-  ],
-  meditation: [
-    "To start meditation, try sitting comfortably for just 2 minutes. Focus on your breath, and when your mind wanders, gently bring attention back to breathing.",
-    "Body scan meditation can help with awareness. Starting at your toes, slowly bring attention to each part of your body, noticing sensations without judgment.",
-    "For beginners, guided meditations can be helpful. There are many free resources available online or through meditation apps."
-  ],
-  gratitude: [
-    "Practicing gratitude can significantly improve mental wellbeing. Try writing down 3 things you're grateful for each day, no matter how small.",
-    "To deepen your gratitude practice, try to be specific about why you're grateful for something, and how it affects your life.",
-    "Research shows that expressing gratitude to others can strengthen relationships and boost happiness. Consider sending a thank-you message to someone today."
-  ],
-  default: [
-    "I'm here to support you on your mental health journey. Would you like some tips on stress management, mindfulness, or sleep improvement?",
-    "Thank you for sharing. While I'm an AI and not a replacement for professional help, I can offer some general wellness suggestions. What area would you like to focus on?",
-    "I'm designed to offer mental wellbeing support. For more personalized advice, consider connecting with a mental health professional. How else can I assist you today?"
-  ],
-  help: [
-    "I can help with topics like anxiety, depression, sleep, meditation, gratitude, and general mental wellbeing. What would you like to know more about?",
-    "You can ask me for coping strategies, wellness tips, or information about mental health practices. How can I support you today?",
-    "I'm here to provide information and suggestions for mental wellbeing. Just let me know what you're interested in or struggling with."
-  ]
-};
-
-// Helper function to get appropriate response based on message content
-const getResponse = (message: string): string => {
-  const lowerMessage = message.toLowerCase();
-  
-  if (lowerMessage.includes('hello') || lowerMessage.includes('hi') || lowerMessage.includes('hey')) {
-    return responses.greeting[Math.floor(Math.random() * responses.greeting.length)];
-  } else if (lowerMessage.includes('anxiety') || lowerMessage.includes('anxious') || lowerMessage.includes('worry')) {
-    return responses.anxiety[Math.floor(Math.random() * responses.anxiety.length)];
-  } else if (lowerMessage.includes('depress') || lowerMessage.includes('sad') || lowerMessage.includes('down')) {
-    return responses.depression[Math.floor(Math.random() * responses.depression.length)];
-  } else if (lowerMessage.includes('sleep') || lowerMessage.includes('insomnia') || lowerMessage.includes('tired')) {
-    return responses.sleep[Math.floor(Math.random() * responses.sleep.length)];
-  } else if (lowerMessage.includes('meditat') || lowerMessage.includes('mindful')) {
-    return responses.meditation[Math.floor(Math.random() * responses.meditation.length)];
-  } else if (lowerMessage.includes('gratitude') || lowerMessage.includes('thankful') || lowerMessage.includes('grateful')) {
-    return responses.gratitude[Math.floor(Math.random() * responses.gratitude.length)];
-  } else if (lowerMessage.includes('help') || lowerMessage.includes('what can you do')) {
-    return responses.help[Math.floor(Math.random() * responses.help.length)];
-  } else {
-    return responses.default[Math.floor(Math.random() * responses.default.length)];
-  }
-};
 
 const Chatbot: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -98,6 +32,7 @@ const Chatbot: React.FC = () => {
   ]);
   const [newMessage, setNewMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [useAI, setUseAI] = useState(true);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -116,7 +51,7 @@ const Chatbot: React.FC = () => {
     }
   }, [isOpen, isMinimized]);
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (!newMessage.trim()) return;
 
     // Add user message
@@ -131,18 +66,69 @@ const Chatbot: React.FC = () => {
     setNewMessage('');
     setIsTyping(true);
 
-    // Simulate AI processing time
-    setTimeout(() => {
-      const aiResponse: Message = {
-        id: (Date.now() + 1).toString(),
-        content: getResponse(userMessage.content),
-        role: 'assistant',
-        timestamp: new Date(),
-      };
+    try {
+      // Get AI response with fallback to predefined responses
+      let responseContent;
       
-      setMessages(prev => [...prev, aiResponse]);
-      setIsTyping(false);
-    }, 1000 + Math.random() * 1000);
+      if (useAI) {
+        try {
+          // Attempt to get a response from the AI service
+          responseContent = await getAIResponse(userMessage.content);
+          
+          // If we got an empty response, use fallback
+          if (!responseContent || responseContent.trim() === '') {
+            throw new Error('Empty response from AI service');
+          }
+        } catch (error) {
+          console.warn('AI service failed, using fallback response', error);
+          responseContent = getFallbackResponse(userMessage.content);
+          
+          // Notify user once that we're using fallback responses
+          toast.info("Using offline responses due to AI service limitations.", {
+            id: "ai-fallback",
+            duration: 3000,
+          });
+          
+          // Switch to fallback mode to avoid repeated errors
+          setUseAI(false);
+          
+          // Try to re-enable AI mode after 1 minute
+          setTimeout(() => setUseAI(true), 60000);
+        }
+      } else {
+        // Use fallback responses directly
+        responseContent = getFallbackResponse(userMessage.content);
+      }
+
+      // Simulate a small delay for a more natural conversation flow
+      setTimeout(() => {
+        const aiResponse: Message = {
+          id: (Date.now() + 1).toString(),
+          content: responseContent,
+          role: 'assistant',
+          timestamp: new Date(),
+        };
+        
+        setMessages(prev => [...prev, aiResponse]);
+        setIsTyping(false);
+      }, 600 + Math.random() * 400); // Slight random delay for natural feel
+      
+    } catch (error) {
+      console.error('Error in chat processing:', error);
+      
+      // Add an error message if something goes wrong
+      setTimeout(() => {
+        const errorResponse: Message = {
+          id: (Date.now() + 1).toString(),
+          content: "I'm sorry, I'm having trouble responding right now. Please try again later.",
+          role: 'assistant',
+          timestamp: new Date(),
+        };
+        
+        setMessages(prev => [...prev, errorResponse]);
+        setIsTyping(false);
+      }, 500);
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
