@@ -4,18 +4,19 @@ import { toast } from "sonner";
 // Gemini AI API endpoint
 const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent";
 
-// For API calls, you'll need a Google API key with Gemini access
 // You can get a free API key at https://aistudio.google.com/app/apikey
-const GEMINI_API_KEY = "AIzaSyAN-jK_5SUML_VPp1K4GqTkBNHPvwwzi5o"; // Set this to your Gemini API key
+// This is just a placeholder - users should replace it with their own valid key
+const GEMINI_API_KEY = "YOUR_GEMINI_API_KEY";
 
 // Timeout for AI API calls (in milliseconds)
-const API_TIMEOUT = 8000;
+const API_TIMEOUT = 10000; // Increased timeout
 
 export async function getAIResponse(message: string): Promise<string> {
   try {
-    // Verify API key is available
-    if (!GEMINI_API_KEY) {
-      throw new Error("Missing Gemini API key");
+    // Verify API key is available and not the placeholder
+    if (!GEMINI_API_KEY || GEMINI_API_KEY === "YOUR_GEMINI_API_KEY") {
+      console.warn("Missing or invalid Gemini API key");
+      return getFallbackResponse(message);
     }
 
     // Create a timeout promise to cancel the request if it takes too long
@@ -23,7 +24,7 @@ export async function getAIResponse(message: string): Promise<string> {
       setTimeout(() => reject(new Error("Request timed out")), API_TIMEOUT);
     });
     
-    // Create the actual fetch promise with proper headers
+    // Create the actual fetch promise with proper headers and URL
     const fetchPromise = fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
       method: "POST",
       headers: {
@@ -74,7 +75,7 @@ export async function getAIResponse(message: string): Promise<string> {
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       console.error("AI API Error:", errorData);
-      throw new Error(`API responded with status ${response.status}`);
+      throw new Error(`API responded with status ${response.status}: ${errorData.error?.message || 'Unknown error'}`);
     }
 
     const data = await response.json();

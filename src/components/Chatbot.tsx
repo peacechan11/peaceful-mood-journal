@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, X, Maximize2, Minimize2, MessageSquare } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -106,7 +105,6 @@ const Chatbot: React.FC = () => {
           
           // If we've had multiple consecutive errors, switch to fallback mode
           if (consecutiveErrors >= 1) {
-            // Switch to fallback mode without showing a toast notification
             setUseAI(false);
           }
         }
