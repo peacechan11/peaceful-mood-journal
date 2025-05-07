@@ -43,7 +43,7 @@ const Blog = () => {
                   name: user.user_metadata.username || user.email?.split('@')[0] || 'User',
                   role: userRole || 'user'
                 } : undefined} 
-                showBothSampleAndRealPosts={true}
+                showBothSampleAndRealPosts={false}
                 sortByDateDesc={true}
               />
             </TabsContent>
