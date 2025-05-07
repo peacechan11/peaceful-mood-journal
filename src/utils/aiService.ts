@@ -6,7 +6,7 @@ const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/
 
 // This is a placeholder API key - users need to replace it with their own valid key
 // from https://aistudio.google.com/app/apikey
-const GEMINI_API_KEY = "YOUR_GEMINI_API_KEY_HERE";
+const GEMINI_API_KEY = "AIzaSyDwWNPX4mCxq5GqzbcC5UB7-7eGt20OhrY";
 
 // Timeout for AI API calls (in milliseconds)
 const API_TIMEOUT = 15000; // 15 seconds timeout
@@ -14,9 +14,8 @@ const API_TIMEOUT = 15000; // 15 seconds timeout
 export async function getAIResponse(message: string): Promise<string> {
   try {
     // Verify API key is available and not the placeholder
-    if (!GEMINI_API_KEY || 
-        GEMINI_API_KEY === "YOUR_GEMINI_API_KEY_HERE" || 
-        GEMINI_API_KEY === "AIzaSyBY_9WOElztOkxZXSpgyQ5q2Dr6eGljOnE") {
+    if (!GEMINI_API_KEY ||
+        GEMINI_API_KEY === "AIzaSyDwWNPX4mCxq5GqzbcC5UB7-7eGt20OhrY") {
       console.warn("Missing or invalid Gemini API key");
       toast.warning("Chatbot is using fallback responses. To use Gemini AI, add your API key.", {
         id: "gemini-api-key-missing",
