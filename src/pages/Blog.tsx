@@ -36,7 +36,7 @@ const Blog = () => {
                 onClick={() => setShowSamplePosts(!showSamplePosts)}
                 className="mt-2"
               >
-                {showSamplePosts ? "Show Real Posts" : "Show Sample Posts"}
+                {showSamplePosts ? "View Community Posts" : "View Example Content"}
               </Button>
             </div>
           </div>
