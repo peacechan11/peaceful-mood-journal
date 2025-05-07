@@ -3,7 +3,9 @@ import { motion } from 'framer-motion';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import BlogSection from '@/components/BlogSection';
+import BlogTable from '@/components/BlogTable';
 import { useAuth } from '@/contexts/AuthContext';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 const Blog = () => {
   const { user, userRole } = useAuth();
@@ -26,13 +28,30 @@ const Blog = () => {
             </p>
           </div>
           
-          <BlogSection 
-            currentUser={user ? {
-              id: user.id,
-              name: user.user_metadata.username || user.email?.split('@')[0] || 'User',
-              role: userRole || 'user'
-            } : undefined} 
-          />
+          <Tabs defaultValue="posts">
+            <TabsList className="mb-8">
+              <TabsTrigger value="posts">Blog Posts</TabsTrigger>
+              {userRole === 'moderator' && (
+                <TabsTrigger value="manage">Manage Posts</TabsTrigger>
+              )}
+            </TabsList>
+            
+            <TabsContent value="posts">
+              <BlogSection 
+                currentUser={user ? {
+                  id: user.id,
+                  name: user.user_metadata.username || user.email?.split('@')[0] || 'User',
+                  role: userRole || 'user'
+                } : undefined} 
+              />
+            </TabsContent>
+            
+            {userRole === 'moderator' && (
+              <TabsContent value="manage">
+                <BlogTable />
+              </TabsContent>
+            )}
+          </Tabs>
         </motion.div>
       </main>
       
