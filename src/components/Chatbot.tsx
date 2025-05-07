@@ -105,13 +105,7 @@ const Chatbot: React.FC = () => {
           
           // If we've had multiple consecutive errors, switch to fallback mode
           if (consecutiveErrors >= 1) {
-            // Notify user once that we're using fallback responses
-            toast.info("Using offline responses due to connectivity issues.", {
-              id: "ai-fallback",
-              duration: 3000,
-            });
-            
-            // Switch to fallback mode
+            // Switch to fallback mode without showing a toast notification
             setUseAI(false);
           }
         }
