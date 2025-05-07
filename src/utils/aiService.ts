@@ -4,18 +4,24 @@ import { toast } from "sonner";
 // Gemini AI API endpoint
 const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
 
-// You can get a free API key at https://aistudio.google.com/app/apikey
-// This is just a placeholder - users should replace it with their own valid key
-const GEMINI_API_KEY = "AIzaSyBY_9WOElztOkxZXSpgyQ5q2Dr6eGljOnE";
+// This is a placeholder API key - users need to replace it with their own valid key
+// from https://aistudio.google.com/app/apikey
+const GEMINI_API_KEY = "YOUR_GEMINI_API_KEY_HERE";
 
 // Timeout for AI API calls (in milliseconds)
-const API_TIMEOUT = 10000; // Increased timeout
+const API_TIMEOUT = 15000; // 15 seconds timeout
 
 export async function getAIResponse(message: string): Promise<string> {
   try {
     // Verify API key is available and not the placeholder
-    if (!GEMINI_API_KEY || GEMINI_API_KEY === "AIzaSyBY_9WOElztOkxZXSpgyQ5q2Dr6eGljOnE") {
+    if (!GEMINI_API_KEY || 
+        GEMINI_API_KEY === "YOUR_GEMINI_API_KEY_HERE" || 
+        GEMINI_API_KEY === "AIzaSyBY_9WOElztOkxZXSpgyQ5q2Dr6eGljOnE") {
       console.warn("Missing or invalid Gemini API key");
+      toast.warning("Chatbot is using fallback responses. To use Gemini AI, add your API key.", {
+        id: "gemini-api-key-missing",
+        duration: 5000,
+      });
       return getFallbackResponse(message);
     }
 
@@ -91,7 +97,11 @@ export async function getAIResponse(message: string): Promise<string> {
     throw new Error("Unexpected response format");
   } catch (error) {
     console.error("Error getting AI response:", error);
-    throw error; // Let the calling code handle this
+    toast.error("Could not connect to AI service. Using fallback responses.", {
+      id: "ai-connection-error",
+      duration: 3000,
+    });
+    return getFallbackResponse(message);
   }
 }
 
