@@ -6,9 +6,12 @@ import BlogSection from '@/components/BlogSection';
 import BlogTable from '@/components/BlogTable';
 import { useAuth } from '@/contexts/AuthContext';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Button } from '@/components/ui/button';
+import { useState } from 'react';
 
 const Blog = () => {
   const { user, userRole } = useAuth();
+  const [showSamplePosts, setShowSamplePosts] = useState(true);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -26,6 +29,16 @@ const Blog = () => {
             <p className="text-muted-foreground max-w-2xl mx-auto">
               Explore stories, insights, and experiences from our community. Find inspiration and connection through shared journeys.
             </p>
+            
+            <div className="flex justify-center mt-4">
+              <Button 
+                variant="outline" 
+                onClick={() => setShowSamplePosts(!showSamplePosts)}
+                className="mt-2"
+              >
+                {showSamplePosts ? "Show Real Posts" : "Show Sample Posts"}
+              </Button>
+            </div>
           </div>
           
           <Tabs defaultValue="posts">
@@ -43,6 +56,7 @@ const Blog = () => {
                   name: user.user_metadata.username || user.email?.split('@')[0] || 'User',
                   role: userRole || 'user'
                 } : undefined} 
+                forceSamplePosts={showSamplePosts}
               />
             </TabsContent>
             

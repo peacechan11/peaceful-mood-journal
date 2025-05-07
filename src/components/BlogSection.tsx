@@ -26,16 +26,17 @@ interface BlogSectionProps {
     name: string;
     role: 'moderator' | 'user';
   };
+  forceSamplePosts?: boolean;
 }
 
-const BlogSection = ({ currentUser }: BlogSectionProps) => {
+const BlogSection = ({ currentUser, forceSamplePosts = false }: BlogSectionProps) => {
   const [posts, setPosts] = useState<BlogPostType[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [moderationView, setModerationView] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState(true);
   const [allTags, setAllTags] = useState<string[]>([]);
-  const [showSamplePosts, setShowSamplePosts] = useState(false);
+  const [showSamplePosts, setShowSamplePosts] = useState(forceSamplePosts);
   const { user } = useAuth();
   
   // New state for comments and selected post for comments
@@ -54,11 +55,17 @@ const BlogSection = ({ currentUser }: BlogSectionProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    fetchPosts();
+    setShowSamplePosts(forceSamplePosts);
+    if (!forceSamplePosts) {
+      fetchPosts();
+    } else {
+      setIsLoading(false);
+    }
+    
     if (user) {
       fetchUserReactions();
     }
-  }, [currentUser, moderationView, user]);
+  }, [currentUser, moderationView, user, forceSamplePosts]);
   
   useEffect(() => {
     if (activePostId) {
@@ -111,15 +118,6 @@ const BlogSection = ({ currentUser }: BlogSectionProps) => {
       const { data, error } = await query;
 
       if (error) throw error;
-
-      // If no posts found, show sample posts
-      if (!data || data.length === 0) {
-        setShowSamplePosts(true);
-        setIsLoading(false);
-        return;
-      }
-
-      setShowSamplePosts(false);
 
       // Extract all unique tags
       const tags = data.flatMap(post => post.tags || []);
@@ -181,8 +179,6 @@ const BlogSection = ({ currentUser }: BlogSectionProps) => {
         description: "Failed to load posts",
         variant: "destructive"
       });
-      // Show sample posts on error
-      setShowSamplePosts(true);
     } finally {
       setIsLoading(false);
     }
@@ -701,7 +697,7 @@ const BlogSection = ({ currentUser }: BlogSectionProps) => {
         </div>
       </div>
 
-      {allTags.length > 0 && (
+      {allTags.length > 0 && !showSamplePosts && (
         <div className="mb-8 flex items-center gap-2 flex-wrap">
           <TagIcon className="h-4 w-4 text-muted-foreground" />
           {allTags.map((tag) => (
