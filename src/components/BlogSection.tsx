@@ -29,9 +29,15 @@ interface BlogSectionProps {
   };
   forceSamplePosts?: boolean;
   showBothSampleAndRealPosts?: boolean;
+  sortByDateDesc?: boolean;
 }
 
-const BlogSection = ({ currentUser, forceSamplePosts = false, showBothSampleAndRealPosts = false }: BlogSectionProps) => {
+const BlogSection = ({ 
+  currentUser, 
+  forceSamplePosts = false, 
+  showBothSampleAndRealPosts = false,
+  sortByDateDesc = true 
+}: BlogSectionProps) => {
   const [posts, setPosts] = useState<BlogPostType[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -115,7 +121,7 @@ const BlogSection = ({ currentUser, forceSamplePosts = false, showBothSampleAndR
           author_id,
           profiles:author_id (username)
         `)
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: !sortByDateDesc });
 
       const { data, error } = await query;
 

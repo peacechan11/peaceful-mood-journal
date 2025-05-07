@@ -44,6 +44,7 @@ const Blog = () => {
                   role: userRole || 'user'
                 } : undefined} 
                 showBothSampleAndRealPosts={true}
+                sortByDateDesc={true}
               />
             </TabsContent>
             
