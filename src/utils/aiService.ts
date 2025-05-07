@@ -6,7 +6,7 @@ const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/
 
 // For API calls, you'll need a Google API key with Gemini access
 // You can get a free API key at https://aistudio.google.com/app/apikey
-const GEMINI_API_KEY = ""; // Set this to your Gemini API key
+const GEMINI_API_KEY = "AIzaSyAN-jK_5SUML_VPp1K4GqTkBNHPvwwzi5o"; // Set this to your Gemini API key
 
 // Timeout for AI API calls (in milliseconds)
 const API_TIMEOUT = 8000;
