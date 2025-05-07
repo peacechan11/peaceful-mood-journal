@@ -17,10 +17,6 @@ export async function getAIResponse(message: string): Promise<string> {
     if (!GEMINI_API_KEY ||
         GEMINI_API_KEY === "AIzaSyDwWNPX4mCxq5GqzbcC5UB7-7eGt20OhrY") {
       console.warn("Missing or invalid Gemini API key");
-      toast.error("Please add your Gemini API key to use AI features", {
-        id: "api-key-missing",
-        duration: 5000,
-      });
       return getFallbackResponse(message);
     }
 
