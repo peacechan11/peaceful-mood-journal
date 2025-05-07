@@ -4,23 +4,9 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import BlogSection from '@/components/BlogSection';
 import { useAuth } from '@/contexts/AuthContext';
-import { Button } from '@/components/ui/button';
-import { seedBlogData } from '@/utils/seedBlogData';
-import { Loader2 } from 'lucide-react';
-import { useState } from 'react';
 
 const Blog = () => {
   const { user, userRole } = useAuth();
-  const [isSeeding, setIsSeeding] = useState(false);
-
-  const handleSeedData = async () => {
-    setIsSeeding(true);
-    try {
-      await seedBlogData();
-    } finally {
-      setIsSeeding(false);
-    }
-  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -38,26 +24,6 @@ const Blog = () => {
             <p className="text-muted-foreground max-w-2xl mx-auto">
               Explore stories, insights, and experiences from our community. Find inspiration and connection through shared journeys.
             </p>
-            
-            {userRole === 'moderator' && (
-              <div className="mt-4">
-                <Button 
-                  onClick={handleSeedData} 
-                  disabled={isSeeding}
-                  variant="outline"
-                  size="sm"
-                >
-                  {isSeeding ? (
-                    <>
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      Seeding Data...
-                    </>
-                  ) : (
-                    'Seed Sample Blog Posts'
-                  )}
-                </Button>
-              </div>
-            )}
           </div>
           
           <BlogSection 
