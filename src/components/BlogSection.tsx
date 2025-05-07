@@ -564,7 +564,6 @@ const BlogSection = ({ currentUser, forceSamplePosts = false, showBothSampleAndR
     if (showBothSampleAndRealPosts) {
       return (
         <motion.div>
-          <h2 className="text-xl font-medium mb-6">Example Content</h2>
           <SampleBlogPosts 
             currentUser={currentUser}
             onCommentClick={handleCommentClick}
@@ -572,7 +571,6 @@ const BlogSection = ({ currentUser, forceSamplePosts = false, showBothSampleAndR
           
           <Separator className="my-10" />
           
-          <h2 className="text-xl font-medium mb-6">Community Posts</h2>
           {renderRealPosts()}
         </motion.div>
       );
