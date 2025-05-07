@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import BlogPost, { BlogPostType } from './BlogPost';
 
@@ -17,7 +16,6 @@ const sampleBlogPosts: BlogPostType[] = [
     tags: ["mindfulness", "mental health", "meditation"],
     likes: 127,
     comments: 23,
-    image: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?q=80&w=1000",
   },
   {
     id: "sample-2",
@@ -32,7 +30,6 @@ const sampleBlogPosts: BlogPostType[] = [
     tags: ["gratitude", "journaling", "positive psychology"],
     likes: 85,
     comments: 14,
-    image: "https://images.unsplash.com/photo-1483546363825-7ebf25fb7513?q=80&w=1000",
   },
   {
     id: "sample-3",
@@ -47,7 +44,6 @@ const sampleBlogPosts: BlogPostType[] = [
     tags: ["resilience", "mental strength", "personal growth"],
     likes: 93,
     comments: 17,
-    image: "https://images.unsplash.com/photo-1620065695260-9830e7a56061?q=80&w=1000",
   },
   {
     id: "sample-4",
@@ -62,7 +58,6 @@ const sampleBlogPosts: BlogPostType[] = [
     tags: ["breathing techniques", "stress reduction", "health"],
     likes: 76,
     comments: 12,
-    image: "https://images.unsplash.com/photo-1518005020951-eccb494ad742?q=80&w=1000",
   },
   {
     id: "sample-5",
@@ -77,7 +72,6 @@ const sampleBlogPosts: BlogPostType[] = [
     tags: ["compassion", "kindness", "relationships"],
     likes: 112,
     comments: 19,
-    image: "https://images.unsplash.com/photo-1531983412531-1f49a365ffed?q=80&w=1000",
   },
   {
     id: "sample-6",
@@ -92,7 +86,6 @@ const sampleBlogPosts: BlogPostType[] = [
     tags: ["goal setting", "personal development", "motivation"],
     likes: 64,
     comments: 9,
-    image: "https://images.unsplash.com/photo-1483213097419-365e22f0f258?q=80&w=1000",
   },
   {
     id: "sample-7",
@@ -107,7 +100,6 @@ const sampleBlogPosts: BlogPostType[] = [
     tags: ["nature", "ecotherapy", "well-being"],
     likes: 88,
     comments: 15,
-    image: "https://images.unsplash.com/photo-1533321942807-08e4007b4e25?q=80&w=1000",
   },
   {
     id: "sample-8",
@@ -122,7 +114,6 @@ const sampleBlogPosts: BlogPostType[] = [
     tags: ["communication", "relationships", "conflict resolution"],
     likes: 97,
     comments: 21,
-    image: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?q=80&w=1000",
   },
   {
     id: "sample-9",
@@ -137,7 +128,6 @@ const sampleBlogPosts: BlogPostType[] = [
     tags: ["exercise", "mental health", "wellness"],
     likes: 103,
     comments: 18,
-    image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?q=80&w=1000",
   },
   {
     id: "sample-10",
@@ -152,7 +142,6 @@ const sampleBlogPosts: BlogPostType[] = [
     tags: ["mindful eating", "nutrition", "health"],
     likes: 79,
     comments: 13,
-    image: "https://images.unsplash.com/photo-1505576399279-565b52d4ac71?q=80&w=1000",
   },
   {
     id: "sample-11",
@@ -167,7 +156,6 @@ const sampleBlogPosts: BlogPostType[] = [
     tags: ["sleep", "health", "wellness"],
     likes: 118,
     comments: 22,
-    image: "https://images.unsplash.com/photo-1455642305343-3a96f5a415fd?q=80&w=1000",
   },
   {
     id: "sample-12",
@@ -182,7 +170,6 @@ const sampleBlogPosts: BlogPostType[] = [
     tags: ["digital wellness", "technology", "mindfulness"],
     likes: 91,
     comments: 16,
-    image: "https://images.unsplash.com/photo-1529236183275-4fdcf2bc987e?q=80&w=1000",
   },
   {
     id: "sample-13",
@@ -197,7 +184,6 @@ const sampleBlogPosts: BlogPostType[] = [
     tags: ["vulnerability", "authenticity", "personal growth"],
     likes: 86,
     comments: 14,
-    image: "https://images.unsplash.com/photo-1593085512500-5d55148d6f0d?q=80&w=1000",
   },
   {
     id: "sample-14",
@@ -212,7 +198,6 @@ const sampleBlogPosts: BlogPostType[] = [
     tags: ["morning routines", "habits", "productivity"],
     likes: 73,
     comments: 11,
-    image: "https://images.unsplash.com/photo-1531697282798-1c6bd12c6308?q=80&w=1000",
   },
   {
     id: "sample-15",
@@ -227,7 +212,6 @@ const sampleBlogPosts: BlogPostType[] = [
     tags: ["community", "connection", "social health"],
     likes: 109,
     comments: 20,
-    image: "https://images.unsplash.com/photo-1536935338788-846bb9981813?q=80&w=1000",
   }
 ];
 
