@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, X, Maximize2, Minimize2, MessageSquare } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';

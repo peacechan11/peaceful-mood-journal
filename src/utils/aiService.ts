@@ -1,37 +1,70 @@
 
 import { toast } from "sonner";
 
-// BlenderBot endpoint from Hugging Face
-const HUGGING_FACE_API_URL = "https://api-inference.huggingface.co/models/facebook/blenderbot-400M-distill";
+// Gemini AI API endpoint
+const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent";
 
-// For more reliable API calls, add an API token if available
-// This is optional but helps increase rate limits
-// You can get a free token at https://huggingface.co/settings/tokens
-const HF_API_TOKEN = ""; // Set this to your Hugging Face API token if you have one
+// For API calls, you'll need a Google API key with Gemini access
+// You can get a free API key at https://aistudio.google.com/app/apikey
+const GEMINI_API_KEY = ""; // Set this to your Gemini API key
 
 // Timeout for AI API calls (in milliseconds)
-const API_TIMEOUT = 5000;
+const API_TIMEOUT = 8000;
 
 export async function getAIResponse(message: string): Promise<string> {
   try {
+    // Verify API key is available
+    if (!GEMINI_API_KEY) {
+      throw new Error("Missing Gemini API key");
+    }
+
     // Create a timeout promise to cancel the request if it takes too long
     const timeoutPromise = new Promise<never>((_, reject) => {
       setTimeout(() => reject(new Error("Request timed out")), API_TIMEOUT);
     });
     
     // Create the actual fetch promise with proper headers
-    const fetchPromise = fetch(HUGGING_FACE_API_URL, {
+    const fetchPromise = fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        ...(HF_API_TOKEN ? { Authorization: `Bearer ${HF_API_TOKEN}` } : {})
       },
       body: JSON.stringify({
-        inputs: message,
-        options: {
-          wait_for_model: true,
-          use_cache: true,
-        }
+        contents: [
+          {
+            parts: [
+              {
+                text: `You are a mental health assistant for PeaceSync. 
+                       Provide helpful, empathetic, and brief responses (under 150 words) to user queries about mental wellbeing.
+                       User message: ${message}`
+              }
+            ]
+          }
+        ],
+        generationConfig: {
+          temperature: 0.7,
+          topK: 40,
+          topP: 0.95,
+          maxOutputTokens: 300,
+        },
+        safetySettings: [
+          {
+            category: "HARM_CATEGORY_HARASSMENT",
+            threshold: "BLOCK_MEDIUM_AND_ABOVE"
+          },
+          {
+            category: "HARM_CATEGORY_HATE_SPEECH",
+            threshold: "BLOCK_MEDIUM_AND_ABOVE"
+          },
+          {
+            category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+            threshold: "BLOCK_MEDIUM_AND_ABOVE"
+          },
+          {
+            category: "HARM_CATEGORY_DANGEROUS_CONTENT",
+            threshold: "BLOCK_MEDIUM_AND_ABOVE"
+          }
+        ]
       }),
     });
     
@@ -46,12 +79,10 @@ export async function getAIResponse(message: string): Promise<string> {
 
     const data = await response.json();
     
-    if (typeof data === 'string') {
-      return data;
-    } else if (Array.isArray(data) && data[0]?.generated_text) {
-      return data[0].generated_text;
-    } else if (data.generated_text) {
-      return data.generated_text;
+    // Extract text from Gemini API response format
+    if (data.candidates && data.candidates[0] && data.candidates[0].content && 
+        data.candidates[0].content.parts && data.candidates[0].content.parts[0]) {
+      return data.candidates[0].content.parts[0].text;
     }
     
     // If we get here, the response didn't match expected formats
