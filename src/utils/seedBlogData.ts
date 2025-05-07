@@ -82,7 +82,7 @@ Whether you're concerned about cognitive decline, struggling with stress and anx
   },
   {
     title: 'Gratitude Journaling: Transform Your Outlook in Five Minutes a Day',
-    excerpt: 'The simple practice of writing down things you're grateful for can dramatically improve your mental health and happiness.',
+    excerpt: "The simple practice of writing down things you're grateful for can dramatically improve your mental health and happiness.",
     content: `
 When we think about improving our mental health, we often imagine complex techniques or lengthy therapy sessions. But one of the most powerful tools for psychological wellbeing is also one of the simplest: gratitude journaling.
 
@@ -197,7 +197,7 @@ With practice and patience, you can learn to recognize your triggers earlier in 
   },
   {
     title: 'The Power of Deep Breathing: A Simple Technique for Immediate Stress Relief',
-    excerpt: 'Discover how controlled breathing exercises can instantly reduce stress and anxiety by activating your body's relaxation response.',
+    excerpt: "Discover how controlled breathing exercises can instantly reduce stress and anxiety by activating your body's relaxation response.",
     content: `
 In moments of stress or anxiety, your breath is always with you—a powerful, built-in tool for regulating your nervous system and returning to a state of calm. Deep breathing techniques have been practiced for thousands of years across various cultures and spiritual traditions, and modern science now confirms their effectiveness for stress management.
 
