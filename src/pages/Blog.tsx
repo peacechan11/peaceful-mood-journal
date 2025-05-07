@@ -30,7 +30,7 @@ const Blog = () => {
           
           <Tabs defaultValue="posts">
             <TabsList className="mb-8">
-              <TabsTrigger value="posts">Blog Posts</TabsTrigger>
+              <TabsTrigger value="posts">All Posts</TabsTrigger>
               {userRole === 'moderator' && (
                 <TabsTrigger value="manage">Manage Posts</TabsTrigger>
               )}
@@ -43,7 +43,7 @@ const Blog = () => {
                   name: user.user_metadata.username || user.email?.split('@')[0] || 'User',
                   role: userRole || 'user'
                 } : undefined} 
-                forceSamplePosts={true}
+                showBothSampleAndRealPosts={true}
               />
             </TabsContent>
             

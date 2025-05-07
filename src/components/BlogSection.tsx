@@ -19,6 +19,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
+import { Separator } from '@/components/ui/separator';
 
 interface BlogSectionProps {
   currentUser?: {
@@ -27,9 +28,10 @@ interface BlogSectionProps {
     role: 'moderator' | 'user';
   };
   forceSamplePosts?: boolean;
+  showBothSampleAndRealPosts?: boolean;
 }
 
-const BlogSection = ({ currentUser, forceSamplePosts = false }: BlogSectionProps) => {
+const BlogSection = ({ currentUser, forceSamplePosts = false, showBothSampleAndRealPosts = false }: BlogSectionProps) => {
   const [posts, setPosts] = useState<BlogPostType[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -56,7 +58,7 @@ const BlogSection = ({ currentUser, forceSamplePosts = false }: BlogSectionProps
 
   useEffect(() => {
     setShowSamplePosts(forceSamplePosts);
-    if (!forceSamplePosts) {
+    if (!forceSamplePosts || showBothSampleAndRealPosts) {
       fetchPosts();
     } else {
       setIsLoading(false);
@@ -65,7 +67,7 @@ const BlogSection = ({ currentUser, forceSamplePosts = false }: BlogSectionProps
     if (user) {
       fetchUserReactions();
     }
-  }, [currentUser, moderationView, user, forceSamplePosts]);
+  }, [currentUser, moderationView, user, forceSamplePosts, showBothSampleAndRealPosts]);
   
   useEffect(() => {
     if (activePostId) {
@@ -558,7 +560,26 @@ const BlogSection = ({ currentUser, forceSamplePosts = false }: BlogSectionProps
       );
     }
 
-    if (showSamplePosts) {
+    // Show both sample and real posts
+    if (showBothSampleAndRealPosts) {
+      return (
+        <motion.div>
+          <h2 className="text-xl font-medium mb-6">Example Content</h2>
+          <SampleBlogPosts 
+            currentUser={currentUser}
+            onCommentClick={handleCommentClick}
+          />
+          
+          <Separator className="my-10" />
+          
+          <h2 className="text-xl font-medium mb-6">Community Posts</h2>
+          {renderRealPosts()}
+        </motion.div>
+      );
+    }
+
+    // Only show sample posts
+    if (forceSamplePosts) {
       return (
         <motion.div>
           <SampleBlogPosts 
@@ -569,6 +590,11 @@ const BlogSection = ({ currentUser, forceSamplePosts = false }: BlogSectionProps
       );
     }
 
+    // Only show real posts
+    return renderRealPosts();
+  };
+
+  const renderRealPosts = () => {
     if (filteredPosts.length > 0) {
       return (
         <motion.div className="space-y-8">
