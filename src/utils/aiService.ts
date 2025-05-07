@@ -6,7 +6,7 @@ const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/
 
 // You can get a free API key at https://aistudio.google.com/app/apikey
 // This is just a placeholder - users should replace it with their own valid key
-const GEMINI_API_KEY = "AIzaSyCPVBJXzp72Sz0kNaTHcqjCV4F78Nz87fg";
+const GEMINI_API_KEY = "AIzaSyBY_9WOElztOkxZXSpgyQ5q2Dr6eGljOnE";
 
 // Timeout for AI API calls (in milliseconds)
 const API_TIMEOUT = 10000; // Increased timeout
@@ -14,7 +14,7 @@ const API_TIMEOUT = 10000; // Increased timeout
 export async function getAIResponse(message: string): Promise<string> {
   try {
     // Verify API key is available and not the placeholder
-    if (!GEMINI_API_KEY || GEMINI_API_KEY === "AIzaSyCPVBJXzp72Sz0kNaTHcqjCV4F78Nz87fg") {
+    if (!GEMINI_API_KEY || GEMINI_API_KEY === "AIzaSyBY_9WOElztOkxZXSpgyQ5q2Dr6eGljOnE") {
       console.warn("Missing or invalid Gemini API key");
       return getFallbackResponse(message);
     }
