@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, X, Maximize2, Minimize2, MessageSquare } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -33,6 +32,7 @@ const Chatbot: React.FC = () => {
   const [newMessage, setNewMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [useAI, setUseAI] = useState(true);
+  const [consecutiveErrors, setConsecutiveErrors] = useState(0);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -50,6 +50,18 @@ const Chatbot: React.FC = () => {
       textareaRef.current.focus();
     }
   }, [isOpen, isMinimized]);
+
+  // Reset AI mode after cooldown period
+  useEffect(() => {
+    if (!useAI) {
+      const timer = setTimeout(() => {
+        setUseAI(true);
+        setConsecutiveErrors(0);
+      }, 60000); // 1 minute cooldown before trying AI again
+      
+      return () => clearTimeout(timer);
+    }
+  }, [useAI]);
 
   const handleSendMessage = async () => {
     if (!newMessage.trim()) return;
@@ -70,7 +82,7 @@ const Chatbot: React.FC = () => {
       // Get AI response with fallback to predefined responses
       let responseContent;
       
-      if (useAI) {
+      if (useAI && consecutiveErrors < 2) {
         try {
           // Attempt to get a response from the AI service
           responseContent = await getAIResponse(userMessage.content);
@@ -79,21 +91,29 @@ const Chatbot: React.FC = () => {
           if (!responseContent || responseContent.trim() === '') {
             throw new Error('Empty response from AI service');
           }
+          
+          // Reset consecutive errors since we got a successful response
+          setConsecutiveErrors(0);
         } catch (error) {
           console.warn('AI service failed, using fallback response', error);
+          
+          // Increment consecutive errors
+          setConsecutiveErrors(prev => prev + 1);
+          
+          // Use fallback response
           responseContent = getFallbackResponse(userMessage.content);
           
-          // Notify user once that we're using fallback responses
-          toast.info("Using offline responses due to AI service limitations.", {
-            id: "ai-fallback",
-            duration: 3000,
-          });
-          
-          // Switch to fallback mode to avoid repeated errors
-          setUseAI(false);
-          
-          // Try to re-enable AI mode after 1 minute
-          setTimeout(() => setUseAI(true), 60000);
+          // If we've had multiple consecutive errors, switch to fallback mode
+          if (consecutiveErrors >= 1) {
+            // Notify user once that we're using fallback responses
+            toast.info("Using offline responses due to connectivity issues.", {
+              id: "ai-fallback",
+              duration: 3000,
+            });
+            
+            // Switch to fallback mode
+            setUseAI(false);
+          }
         }
       } else {
         // Use fallback responses directly
